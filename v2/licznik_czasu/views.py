@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Project, Client, Employee
+from .forms import UserForm
 
-from .models import Project
 
 # Create your views here.
 
@@ -19,13 +22,34 @@ def home(request):
 
 
 def view_profile(request):
-    args = {'user': request.user}
-    return render(request, "account/profile.html", args)
+    user = request.user
+
+    try:
+        client = Client.objects.get(user=user)
+        phone_number = client.phone_number
+    except Client.DoesNotExist:
+        try:
+            employee = Employee.objects.get(user=user)
+            phone_number = employee.phone_number
+        except Employee.DoesNotExist:
+            phone_number = "Brak numeru telefonu"
+
+    context = {
+        'user': user,
+        'phone_number': phone_number
+    }
+    return render(request, 'account/profile.html', context)
 
 
 def edit_profile(request):
-    args = {'user': request.user}
-    return render(request, "account/profile_edit.html", args)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('view_profile')
+    else:
+        form = UserForm(instance=request.user)
+    return render(request, 'account/profile_edit.html', {'form': form})
 
 
 def create_project(request):

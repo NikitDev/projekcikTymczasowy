@@ -108,42 +108,11 @@
 </head>
 
 <body>
-    <form method="post" action="{% url 'edit_profile' %}">
-        {% csrf_token %}
-        {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-        {% endif %}
-
-        <h1>Edycja profilu</h1>
-        <div>
-            <label for="first_name">Imię:</label>
-            <input type="text" name="first_name" maxlength="150" required="" id="first_name" placeholder={{ user.first_name }}>
-        </div>
-        <br>
-        <div>
-            <label for="last_name">Nazwisko:</label>
-            <input type="text" name="first_name" maxlength="150" required="" id="last_name" placeholder={{ user.last_name }}>
-        </div>
-        <br>
-        <div>
-            <label for="phone_number">Numer telefonu:</label>
-            <input type="number" name="phone_number" maxlength="150" required="" id="phone_number" placeholder="997">
-        </div>
-        <br>
-        <div>
-            <label for="email">Adres e-mail:</label>
-            <input type="text" name="email" placeholder={{ user.email }} maxlength="150" required="" id="email">
-        </div>
-
-        <div class="buttons">
-            <a class="button2" href="{% url 'account_email' %}">Zmień e-mail</a>
-        </div>
-
-        <div class="buttons">
-            <a class="button2" href="{% url 'view_profile' %}">Anuluj </a>
-            <a class="button2" href="{% url 'view_profile' %}">Potwierdź </a>
-        </div>
-    </form>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+  </form>
 </body>
 
 </html>
