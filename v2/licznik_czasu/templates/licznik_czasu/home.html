@@ -1,0 +1,145 @@
+{% extends "account/base.html" %}
+{% block head_title %}Home{% endblock %}
+
+{% block content %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .main-form {
+            height: max-content;
+            width: 80%;
+            background-color: white;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+            padding: 50px 35px;
+        }
+
+        .main-form * {
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            letter-spacing: 0.5px;
+            outline: none;
+            border: none;
+        }
+
+        .main-form h1 {
+            min-width: 320px;
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        .project-card {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            height: fit-content;
+            background-color: #36f;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .project-card h1 {
+            height: fit-content;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 400;
+            color: white;
+            margin-bottom: 0px;
+            margin-top: 0px;
+        }
+
+        .project-data p {
+            font-size: large;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .project-data {
+            width: 100%;
+        }
+
+        .project-grid{
+            display: grid;
+            gap: 1rem;
+
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+        }
+
+        .button-holder{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .new-project{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            background-color: #36f;
+            color: white;
+            width: 50%;
+            min-width: 180px;
+            height: 2rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            letter-spacing: 0.5px;
+            text-align: center;
+            font-size: large;
+            font-family: 'Poppins', sans-serif;
+        }
+
+    </style>
+</head>
+
+<body>
+    <form class="main-form">
+        {% csrf_token %}
+        <h1>Projekty</h1>
+        <div class="button-holder">
+            <a class="new-project" href="{% url 'create_project' %}">Stwórz nowy projekt</a>
+        </div>
+        <section class="project-grid">
+            {% for project in projects %}
+            <a class="project-card" href="{% url 'view_project' project.id %}">
+                <div class="project-data">
+                    <p>
+                        Nazwa Projektu: {{ project.project_name }}
+                    </p>
+                    <p>
+                        Klient: {{ project.client_id }}
+                    </p>
+                    <p>
+                        {{ project.description }}
+                    </p>
+                </div>
+            </a>
+            {% endfor %}
+        </section>   
+    </form>
+</body>
+</html>
+{% endblock %}

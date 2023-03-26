@@ -1,0 +1,105 @@
+{% extends "account/base.html" %}
+{% block head_title %}Tworzenie projektu{% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .main-form {
+            height: max-content;
+            width: 50%;
+            background-color: white;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+            padding: 50px 35px;
+        }
+        
+        .main-form * {
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            letter-spacing: 0.5px;
+            outline: none;
+            border: none;
+        }
+
+        .header{
+            text-align: center;
+        }
+
+
+        label{
+            display: block;
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .enter-value{
+            display: block;
+            height: 50px;
+            width: 100%;
+            background-color: rgb(214, 208, 208);
+            border-radius: 3px;
+            padding: 0 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        ::placeholder{
+          color: blue;
+        }
+
+        .confirm-project-input{
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            background-color: #36f;
+            color: white;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form class="main-form" method="POST">
+        <h1 class="header">Stwórz nowy projekt</h1>
+        <div class="creation-form">
+            <p>
+                <label for="project-name">Podaj nazwę nowego projektu </label>
+                <input class="enter-value" type="text" placeholder="Podaj nazwę projektu" id="project-name">
+            </p>
+            <p>
+                <label for="project-client">Podaj nazwę klienta</label>
+                <input class="enter-value" type="text" placeholder="Podaj klienta" id="project-client">
+            </p>
+            <p class="adding-employees">
+                <label for="project-employee">Dodaj pracownika do projektu</label>
+                <select name="employee-list" id="project-employee" multiple>
+                    <option value="employee1">Employee1</option>
+                    <option value="employee2">Employee2</option>
+                    <option value="employee3">Employee3</option>
+                    <option value="employee4">Employee4</option>
+                </select>
+            </p>
+            <input class="confirm-project-input" type="submit" value="Stwórz projekt">
+        </div>
+    </form>
+</body>
+</html>
+{% endblock %}
