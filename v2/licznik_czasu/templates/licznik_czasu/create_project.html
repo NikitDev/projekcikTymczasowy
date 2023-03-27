@@ -74,30 +74,27 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        .creation-form input{
+            display: block;
+            width: 100%;
+            background-color: rgb(214, 208, 208);
+            border-radius: 3px;
+            padding: 15px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
     </style>
 </head>
 <body>
     <form class="main-form" method="POST">
+        {% csrf_token %}
         <h1 class="header">Stwórz nowy projekt</h1>
         <div class="creation-form">
-            <p>
-                <label for="project-name">Podaj nazwę nowego projektu </label>
-                <input class="enter-value" type="text" placeholder="Podaj nazwę projektu" id="project-name">
-            </p>
-            <p>
-                <label for="project-client">Podaj nazwę klienta</label>
-                <input class="enter-value" type="text" placeholder="Podaj klienta" id="project-client">
-            </p>
-            <p class="adding-employees">
-                <label for="project-employee">Dodaj pracownika do projektu</label>
-                <select name="employee-list" id="project-employee" multiple>
-                    <option value="employee1">Employee1</option>
-                    <option value="employee2">Employee2</option>
-                    <option value="employee3">Employee3</option>
-                    <option value="employee4">Employee4</option>
-                </select>
-            </p>
-            <input class="confirm-project-input" type="submit" value="Stwórz projekt">
+            {{ form.as_p }}
+            <button class="confirm-project-input" type="submit">Stwórz projekt</button>
         </div>
     </form>
 </body>

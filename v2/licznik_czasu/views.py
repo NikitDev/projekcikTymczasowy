@@ -1,11 +1,8 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db import transaction
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from .models import Project, Client, Employee
-from .forms import UserForm
+from .forms import UserForm, ProjectForm
 
 
 # Create your views here.
@@ -16,14 +13,13 @@ def posts(request):
 
 
 def home(request):
-    projects = Project.objects.all()
+    projects = Project.objects.all().order_by('id')
     context = {'projects': projects}
     return render(request, 'licznik_czasu/home.html', context)
 
 
 def view_profile(request):
     user = request.user
-
     try:
         client = Client.objects.get(user=user)
         phone_number = client.phone_number
@@ -52,12 +48,39 @@ def edit_profile(request):
     return render(request, 'account/profile_edit.html', {'form': form})
 
 
-def create_project(request):
-    return render(request, "licznik_czasu/create_project.html")
-
-
 def view_project(request, project_id):
     context = {
         "project": Project.objects.get(pk=project_id)
     }
     return render(request, "licznik_czasu/view_project.html", context)
+
+
+def create_project(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project_name = form.cleaned_data['project_name']
+            project_description = form.cleaned_data['description']
+            project = Project.objects.create(project_name=project_name, description=project_description)
+            return redirect('home')
+    else:
+        form = ProjectForm()
+    return render(request, "licznik_czasu/create_project.html", {'form': form})
+
+
+def edit_project(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect('view_project', project_id)
+    else:
+        form = ProjectForm(instance=project)
+    context = {
+        'form': form,
+        'project': project
+    }
+    return render(request, "licznik_czasu/edit_project.html", context)
+
+

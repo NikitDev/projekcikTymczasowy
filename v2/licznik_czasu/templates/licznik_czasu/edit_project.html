@@ -71,7 +71,7 @@
         gap: 1rem;
     }
 
-    .buttons a{
+    .buttons *{
         text-align: center;
         margin-top: 10px;
         margin-bottom: 10px;
@@ -85,26 +85,30 @@
         cursor: pointer;
         text-decoration: none;
     }
+
+    .creation-form input{
+            display: block;
+            width: 100%;
+            background-color: rgb(214, 208, 208);
+            border-radius: 3px;
+            padding: 15px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+    }
     </style>
 </head>
+
 <body>
-    <form class="main-form">
+    <form class="main-form" method="POST">
+        {% csrf_token %}
         <h1 class="header">Projekt id: {{ project.id }}</h1>
-        <div class="project-name">
-            <label for="project-name">Nazwa projektu</label>
-            <output name="project-name" id="project-name">{{ project.project_name }}</output>
-        </div>
-        <div class="project-client">
-            <label for="project-client">Klient</label>
-            <output name="project-client" id="project-client">{{ project.project_client }}</output>
-        </div>
-        <div class="project-description">
-            <label>Opis projektu</label>
-            <p>{{ project.description }}</p>
+        <div class="creation-form">
+            {{ form.as_p }}
         </div>
         <div class="buttons">
-            <a class="go-back-button" href="{% url 'home' %}">Powrót</a>
-            <a class="edit-button" href="{% url 'edit_project' project.id %}">Edytuj</a>
+            <a href="{% url 'view_project' project.id %}">Powrót</a>
+            <button type="submit">Zapisz</button>
         </div>
 
     </form>

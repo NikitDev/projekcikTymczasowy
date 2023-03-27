@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from .models import User, Project
 
 
 class UserForm(forms.ModelForm):
@@ -10,3 +10,12 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+
+class ProjectForm(forms.ModelForm):
+    project_name = forms.CharField(max_length=128, required=True)
+    description = forms.CharField(required=True)
+
+    class Meta:
+        model = Project
+        fields = ['project_name', 'description']
