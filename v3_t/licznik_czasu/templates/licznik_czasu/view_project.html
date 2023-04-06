@@ -1,0 +1,114 @@
+{% extends "account/base.html" %}
+{% block head_title %}Projekt: {{ project.project_name }}{% endblock %}
+
+{% block content %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        
+    body {
+        background-color: white;
+    }
+
+    .main-form {
+        height: max-content;
+        width: 50%;
+        background-color: white;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+        padding: 50px 35px;
+    }
+    
+    .main-form * {
+        font-family: 'Poppins', sans-serif;
+        color: black;
+        letter-spacing: 0.5px;
+        outline: none;
+        border: none;
+    }
+
+    .header{
+        text-align: center;
+    }
+
+
+    label{
+        display: block;
+        margin-top: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    output {
+        display: block;
+        width: 100%;
+        height: fit-content;
+        min-height: 40px;
+        background-color: rgb(214, 208, 208);
+        border-radius: 5px;
+        margin-top: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+    }
+
+    .project-description p{
+        background-color: rgb(214, 208, 208);
+        border-radius: 5px;
+    }
+
+    .buttons{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .buttons a{
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+        background-color: #36f;
+        color: white;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    </style>
+</head>
+<body>
+    <form class="main-form">
+        <h1 class="header">Projekt id: {{ project.id }}</h1>
+        <div class="project-name">
+            <label for="project-name">Nazwa projektu</label>
+            <output name="project-name" id="project-name">{{ project.project_name }}</output>
+        </div>
+        <div class="project-client">
+            <label for="project-client">Klient</label>
+            <output name="project-client" id="project-client">{{ project.project_client }}</output>
+        </div>
+        <div class="project-description">
+            <label>Opis projektu</label>
+            <p>{{ project.description }}</p>
+        </div>
+        <div class="buttons">
+            <a class="go-back-button" href="{% url 'home' %}">Powrót</a>
+            <a class="edit-button" href="{% url 'edit_project' project.id %}">Edytuj</a>
+        </div>
+
+    </form>
+
+</body>
+</html>
+{% endblock %}
