@@ -8,10 +8,6 @@ from .forms import UserForm, ProjectForm
 # Create your views here.
 
 
-def posts(request):
-    return render(request, 'posts.html')
-
-
 def home(request):
     projects = Project.objects.all().order_by('id')
     context = {'projects': projects}

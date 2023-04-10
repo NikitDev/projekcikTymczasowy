@@ -1,11 +1,14 @@
-from django.contrib.auth.models import User
-from django.contrib.auth.models import AbstractUser, Group
-from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class User(AbstractUser):
+    who_is = models.CharField(max_length=16, choices=(('CL', 'Client'), ('EM', 'Employee')), default='Client')
+
+
 class Client(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=64, null=True, blank=True)
 
@@ -23,7 +26,7 @@ class Project(models.Model):
 
 
 class Employee(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=64, null=True, blank=True)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
 
