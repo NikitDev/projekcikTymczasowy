@@ -5,7 +5,6 @@ from .models import Client, User, Employee
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
-    print('essa')
     try:
         if created:
             if User.who_is == 'Client':
