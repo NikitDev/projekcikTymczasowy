@@ -5,7 +5,6 @@ from .models import Client, User, Employee
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
-    print('essa')
     try:
         if created:
             if User.who_is == 'Client':
@@ -13,4 +12,4 @@ def create_profile(sender, instance, created, **kwargs):
             else:
                 Employee.objects.create(user=instance).save()
     except Exception as err:
-        print(f'Error creating user profile!\n{err}')
+        print(f'Błąd podczas tworzenia profilu.\n{err}')

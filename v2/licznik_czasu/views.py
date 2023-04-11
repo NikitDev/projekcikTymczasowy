@@ -1,11 +1,6 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 from .models import Project, Client, Employee
 from .forms import UserForm, ProjectForm
-
-
-# Create your views here.
 
 
 def home(request):
