@@ -12,4 +12,4 @@ def create_profile(sender, instance, created, **kwargs):
             else:
                 Employee.objects.create(user=instance).save()
     except Exception as err:
-        print(f'Error creating user profile!\n{err}')
+        print(f'Błąd podczas tworzenia profilu.\n{err}')
