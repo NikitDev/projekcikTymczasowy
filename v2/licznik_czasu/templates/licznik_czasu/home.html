@@ -49,7 +49,7 @@
             width: 100%;
             display: flex;
             flex-direction: row;
-            height: fit-content;
+            height: 100%;
             background-color: #36f;
             color: white;
             border-radius: 5px;
@@ -81,9 +81,7 @@
         .project-grid{
             display: grid;
             gap: 1rem;
-
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-
         }
 
         .button-holder{
@@ -91,17 +89,18 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+            gap: 1rem;
         }
 
-        .new-project{
+        .button-text{
             display: flex;
             justify-content: center;
             align-items: center;
             text-decoration: none;
             background-color: #36f;
             color: white;
-            width: 50%;
-            min-width: 180px;
+            max-width: content;
+            min-width: 400px;
             height: 2rem;
             margin-top: 1rem;
             margin-bottom: 1rem;
@@ -119,8 +118,9 @@
     <form class="main-form">
         {% csrf_token %}
         <h1>Projekty</h1>
+        {% if user.is_authenticated %}
         <div class="button-holder">
-            <a class="new-project" href="{% url 'create_project' %}">Stwórz nowy projekt</a>
+            <a class="button-text" href="{% url 'create_project' %}">Stwórz nowy projekt</a>
         </div>
         <section class="project-grid">
             {% for project in projects %}
@@ -138,7 +138,13 @@
                 </div>
             </a>
             {% endfor %}
-        </section>   
+        </section>
+        {% else %}
+        <div class="button-holder">
+            <a class="button-text" href="{% url 'account_login' %}">Zaloguj się</a>
+            <a class="button-text" href="{% url 'account_signup' %}">Zarejestruj się</a>
+        </div>
+        {% endif %}
     </form>
 </body>
 </html>

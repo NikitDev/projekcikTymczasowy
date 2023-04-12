@@ -87,6 +87,11 @@ TEMPLATES = [
     }
 ]
 
+ACCOUNT_FORMS = {
+    'login': 'licznik_czasu.forms.CustomLoginForm',
+    'signup': 'licznik_czasu.forms.CustomSignupForm'
+}
+
 WSGI_APPLICATION = 'ProjektZespolowy.wsgi.application'
 
 
