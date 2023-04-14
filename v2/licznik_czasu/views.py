@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Project, Client, Employee
+from .models import Project, Client, Employee, Task
 from .forms import UserForm, ProjectForm
 
 
@@ -33,7 +33,8 @@ def view_profile(request):
 
 def view_project(request, project_id):
     context = {
-        "project": Project.objects.get(pk=project_id)
+        "project": Project.objects.get(pk=project_id),
+        "tasks": Task.objects.filter(project_id=project_id)
     }
     return render(request, "licznik_czasu/view_project.html", context)
 
