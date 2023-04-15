@@ -1,6 +1,6 @@
 from django import forms
 from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm
-from .models import User, Project
+from .models import User, Project, Task
 
 
 class CustomLoginForm(LoginForm):
@@ -59,9 +59,24 @@ class UserForm(forms.ModelForm):
 
 class ProjectForm(forms.ModelForm):
     project_name = forms.CharField(max_length=128, required=True, label="Nazwa projektu")
+    project_name.widget = forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'name'})
     description = forms.CharField(required=True, label="Opis projektu")
+    description.widget = forms.Textarea(
+        attrs={'class': 'form-control', 'placeholder': 'name', 'style': 'height: fit-content;'})
 
 
     class Meta:
         model = Project
         fields = ['project_name', 'description']
+
+
+class TaskForm(forms.ModelForm):
+    task_name = forms.CharField(max_length=30, label="Nazwa zadania")
+    task_name.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nazwa nowego zadania'})
+    description = forms.CharField(label="Opis zadania", required=False)
+    description.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opis nowego zadania'})
+
+    class Meta:
+        model = Task
+        fields = ['task_name', 'description']

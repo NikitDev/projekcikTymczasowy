@@ -7,39 +7,72 @@
 <head>
 </head>
 
-<body class="container w-100">
-    <form class="main-form">
-        <div class="container h-auto w-100 d-inline-flex flex-column rounded bg-secondary p-5" style="--bs-bg-opacity: .3;">
-            <h1 class="fs-1 mb-4">Projekt id: {{ project.id }}</h1>
-            <div class="mb-3">
-                <label for="project-name">Nazwa projektu</label>
-                <output class="form-control" name="project-name" id="project-name">{{ project.project_name }}</output>
-            </div>
-            <div class="mb-3">
-                <label for="project-client">Klient</label>
-                <output class="form-control" name="project-client" id="project-client">{{ project.client_id }}</output>
-            </div>
-            <div class="mb-3">
-                <label>Opis projektu</label>
-                <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
-            </div>
-            <div>
-                {% for task in tasks %}
-                    <div class="mb-3">
-                        <p>Task</p>
-                        <output class="form-control">Task name: {{ task.task_name }}</output>
-                        <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">Description: {{ task.description }}</output>
-                        <output class="form-control">Creation date: {{ task.creation_date }}</output>
-                        <output class="form-control">Project: {{ task.project_id }}</output>
+<body class="w-100 flex-fill justify-content-center">
+<form class="main-form" method="POST">
+    {% csrf_token %}
+    <div class="container h-auto w-100 d-flex flex-column rounded bg-secondary p-5 shadow-lg mb-3" style="--bs-bg-opacity: .3; flex-basis: 100%">
+        <div class="d-flex justify-content-between mb-4">
+            <h1 class="fs-1">Projekt id: {{ project.id }}</h1>
+            <a class="btn btn-primary mb-3 pt-2" href="{% url 'home' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+            </a>
+        </div>
+        <div class="mb-3">
+            <label for="project-name">Nazwa projektu</label>
+            <output class="form-control" name="project-name" id="project-name">{{ project.project_name }}</output>
+        </div>
+        <div class="mb-3">
+            <label for="project-client">Klient</label>
+            <output class="form-control" name="project-client" id="project-client">{{ project.client_id }}</output>
+        </div>
+        <div class="mb-3">
+            <label>Opis projektu</label>
+            <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
+        </div>
+        <div class="d-flex col justify-content-between">
+            <h1 class="">Zadania</h1>
+            <button id="myInput" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">+</button>
+        </div>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Dodaj zadanie</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                {% endfor %}
-            </div>
-            <div class="d-flex justify-content-center gap-2 mt-4">
-                <a class="btn btn-primary mb-3" href="{% url 'home' %}">Powrót</a>
-                <a class="btn btn-primary mb-3" href="{% url 'edit_project' project.id %}">Edytuj</a>
+                    <div class="modal-body">
+                        {% for field in form %}
+                            {% if field.errors %}
+                            <div>
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                {{ field.label_tag }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cofnij</button>
+                        <button type="submit" class="btn btn-primary">Zapisz</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </form>
+        {% for task in tasks %}
+            <div class="mb-3">
+                <p>Task</p>
+                <output class="form-control">Task name: {{ task.task_name }}</output>
+                <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">Description: {{ task.description }}</output>
+                <output class="form-control">Creation date: {{ task.creation_date }}</output>
+                <output class="form-control">Project: {{ task.project_id }}</output>
+            </div>
+        {% endfor %}
+    </div>
+</form>
 </body>
 
 </html>

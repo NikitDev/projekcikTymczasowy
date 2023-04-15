@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Project, Client, Employee, Task
-from .forms import UserForm, ProjectForm
+from .forms import UserForm, ProjectForm, TaskForm
 
 
 # Create your views here.
@@ -32,8 +32,18 @@ def view_profile(request):
 
 
 def view_project(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    form = TaskForm()
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task_name = form.cleaned_data['task_name']
+            description = form.cleaned_data['description']
+            task = Task.objects.create(task_name=task_name, description=description, project_id=project)
+            return redirect('view_project', project_id)
     context = {
         "project": Project.objects.get(pk=project_id),
+        "form": form,
         "tasks": Task.objects.filter(project_id=project_id)
     }
     return render(request, "licznik_czasu/view_project.html", context)
@@ -50,19 +60,3 @@ def create_project(request):
     else:
         form = ProjectForm()
     return render(request, "licznik_czasu/create_project.html", {'form': form})
-
-
-def edit_project(request, project_id):
-    project = Project.objects.get(pk=project_id)
-    if request.method == 'POST':
-        form = ProjectForm(request.POST, instance=project)
-        if form.is_valid():
-            form.save()
-            return redirect('view_project', project_id)
-    else:
-        form = ProjectForm(instance=project)
-    context = {
-        'form': form,
-        'project': project
-    }
-    return render(request, "licznik_czasu/edit_project.html", context)

@@ -19,7 +19,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
+        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
             style="--bs-bg-opacity: .3">
             <h1 class="fs-1 mb-4">{% trans "Sign In" %}</h1>
             {{ form.non_field_errors }}
@@ -36,8 +36,7 @@
                 {{ form.remember }}
             </div>
             <button class="btn btn-primary mb-3" type="submit">{% trans "Sign In" %}</button>
-            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?"
-                %}</a>
+            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             <p>
                 <a href="{{ signup_url }}">Stwórz konto</a>
             </p>

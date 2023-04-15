@@ -18,7 +18,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
+        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
             style="--bs-bg-opacity: .3;">
             <h1 class="fs-1 mb-4">Podgląd profilu</h1>
             {% for field in form %}
