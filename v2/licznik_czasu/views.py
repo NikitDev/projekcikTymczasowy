@@ -1,13 +1,4 @@
 from django.shortcuts import render, redirect
-from .models import Project, Client, Employee, Task
-from .forms import UserForm, ProjectForm, TaskForm
-
-
-# Create your views here.
-
-
-def posts(request):
-    return render(request, 'posts.html')
 
 
 def home(request):
