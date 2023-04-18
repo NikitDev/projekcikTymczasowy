@@ -7,96 +7,42 @@
 
 {% block content %}
 
+<html>
+
 <head>
-    <style>
-        body {
-            background-color: white;
-        }
-
-        .login {
-            height: fit-content;
-            min-height: 520px;
-            width: 400px;
-            background-color: rgba(255, 255, 255, 0.13);
-            position: absolute;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-            padding: 50px 35px;
-        }
-
-        .login * {
-            font-family: 'Poppins', sans-serif;
-            color: black;
-            letter-spacing: 0.5px;
-            outline: none;
-            border: none;
-        }
-
-        button {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            width: 100%;
-            background-color: #36f;
-            color: white !important;
-            padding: 15px 0;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: rgb(31, 61, 145);
-            box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, .3);
-        }
-
-        ::placeholder {
-            color: blue;
-        }
-
-        p:has(input[type='checkbox'], label[for=id_remember]) {
-            display: flex;
-            height: auto;
-            margin-bottom: 0.5em;
-        }
-
-        input[type='checkbox'],
-        label[for=id_remember] {
-            width: fit-content !important;
-            margin-top: 2px;
-        }
-
-        input {
-            display: block;
-            width: 100%;
-            background-color: rgb(214, 208, 208);
-            border-radius: 3px;
-            padding: 15px;
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: 300;
-        }
-    </style>
 </head>
 
-<body>
+<body class="container d-flex justify-content-center align-items-center">
     <br>
     <form class="login" method="POST" action="{% url 'account_login' %}">
         {% csrf_token %}
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <h1>{% trans "Sign In" %}</h1>
-        {{ form.as_p }}
-        <button class="button" type="submit">{% trans "Sign In" %}</button>
-        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-        <p>
-            <a href="{{ signup_url }}">Stwórz konto</a>
-        </p>
+        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
+            style="--bs-bg-opacity: .3">
+            <h1 class="fs-1 mb-4">{% trans "Sign In" %}</h1>
+            {{ form.non_field_errors }}
+            <div class="form-floating mb-3">
+                {{ form.login }}
+                {{ form.login.label_tag }}
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.password }}
+                {{ form.password.label_tag }}
+            </div>
+            <div class="mb-3">
+                {{ form.remember.label_tag }}
+                {{ form.remember }}
+            </div>
+            <button class="btn btn-primary mb-3" type="submit">{% trans "Sign In" %}</button>
+            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            <p>
+                <a href="{{ signup_url }}">Stwórz konto</a>
+            </p>
+        </div>
     </form>
 </body>
+
+</html>
 {% endblock %}

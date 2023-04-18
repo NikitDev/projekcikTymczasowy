@@ -37,7 +37,7 @@ class Employee(models.Model):
 class Task(models.Model):
     task_name = models.TextField(max_length=128)
     description = models.TextField()
-    creation_date = models.DateField()
+    creation_date = models.DateField(auto_now_add=True)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
 
 

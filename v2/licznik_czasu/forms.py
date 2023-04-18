@@ -1,21 +1,82 @@
 from django import forms
-from .models import User, Project
+from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm
+from .models import User, Project, Task
+
+
+class CustomLoginForm(LoginForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomLoginForm, self).__init__(*args, **kwargs)
+        self.fields['login'].widget = forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'login'})
+        self.fields['password'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'password'})
+
+
+class CustomSignupForm(SignupForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomSignupForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget = forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'username'})
+        self.fields['email'].widget = forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'email'})
+        self.fields['password1'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'password1'})
+        self.fields['password2'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'password2'})
+
+
+class CustomChangePasswordForm(ChangePasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomChangePasswordForm, self).__init__(*args, **kwargs)
+        self.fields['oldpassword'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'oldpassword'})
+        self.fields['password1'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'password1'})
+        self.fields['password2'].widget = forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'password2'})
+
+
+class CustomResetPasswordForm(ResetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomResetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email'})
 
 
 class UserForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
-    email = forms.EmailField(max_length=254, required=True)
+    username = forms.CharField(label="Nazwa użytkownika", disabled=True)
+    username.widget = forms.TextInput(attrs={'class': 'form-control'})
+    first_name = forms.CharField(max_length=30, required=True, label="Imię")
+    first_name.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'name'})
+    last_name = forms.CharField(max_length=30, required=True, label="Nazwisko")
+    last_name.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'last_name'})
+    email = forms.EmailField(max_length=254, required=True, label="Adres e-mail")
+    email.widget = forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'email'})
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
 
 class ProjectForm(forms.ModelForm):
-    project_name = forms.CharField(max_length=128, required=True)
-    description = forms.CharField(required=True)
+    project_name = forms.CharField(max_length=128, required=True, label="Nazwa projektu")
+    project_name.widget = forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'name'})
+    description = forms.CharField(required=True, label="Opis projektu")
+    description.widget = forms.Textarea(
+        attrs={'class': 'form-control', 'placeholder': 'name', 'style': 'height: fit-content;'})
+
 
     class Meta:
         model = Project
         fields = ['project_name', 'description']
+
+
+class TaskForm(forms.ModelForm):
+    task_name = forms.CharField(max_length=30, label="Nazwa zadania")
+    task_name.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nazwa nowego zadania'})
+    description = forms.CharField(label="Opis zadania", required=False)
+    description.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opis nowego zadania'})
+
+    class Meta:
+        model = Task
+        fields = ['task_name', 'description']
