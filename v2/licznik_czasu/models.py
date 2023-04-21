@@ -39,6 +39,7 @@ class Task(models.Model):
     description = models.TextField()
     creation_date = models.DateField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
+    employee = models.ManyToManyField(Employee, null=True, blank=True)
 
 
 class TaskTimer(models.Model):
