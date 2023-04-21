@@ -1,11 +1,10 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 
 
 class User(AbstractUser):
-    who_is = models.CharField(max_length=16, choices=(('CL', 'Client'), ('EM', 'Employee')), default='Client')
+    who_is = models.CharField(max_length=16, choices=(('CL', 'Client'), ('EM', 'Employee')), default='CL')
 
 
 class Client(models.Model):
@@ -28,27 +27,22 @@ class Employee(models.Model):
 class Project(models.Model):
     project_name = models.TextField(max_length=128)
     description = models.TextField(null=True, blank=True)
-    client_id = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    employee = models.ManyToManyField(Employee, blank=True)
 
     def __str__(self):
         return f'project_name: {self.project_name}, id: {self.id}'
-
-
-class ProjectEmployee(models.Model):
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
 
 class Task(models.Model):
     task_name = models.TextField(max_length=128)
     description = models.TextField()
     creation_date = models.DateField(auto_now_add=True)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
 
 
 class TaskTimer(models.Model):
-    time_started = models.DateTimeField(null=True, blank=True)
+    time_started = models.DateTimeField(auto_now_add=True)
     time_ended = models.DateTimeField(null=True, blank=True)
     time_elapsed = models.DurationField(null=True, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, default='')

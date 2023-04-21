@@ -7,9 +7,11 @@ from .models import Client, User, Employee
 def create_profile(sender, instance, created, **kwargs):
     try:
         if created:
-            if User.who_is == 'Client':
+            if instance.who_is == 'CL':
                 Client.objects.create(user=instance).save()
-            else:
+            elif instance.who_is == 'EM':
                 Employee.objects.create(user=instance).save()
+            else:
+                print('Error!')
     except Exception as err:
         print(f'Błąd podczas tworzenia profilu.\n{err}')
