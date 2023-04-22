@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm
+from django.utils import timezone
+from django.http import JsonResponse
 
 
 def home(request):
@@ -53,3 +55,23 @@ def create_project(request):
     else:
         form = ProjectForm()
     return render(request, "licznik_czasu/create_project.html", {'form': form})
+
+
+def timer(request, task_id):
+    if request.method == 'POST':
+        action = request.POST.get('action')  # Get the value of the action attribute to be able to determine whether we are starting or pausing the timer
+        if action == 'start':
+            start_time = timezone.now()  # Get the
+            request.session['start_time'] = start_time.timestamp()  # Keep the start time in the session for easy access later
+            timer = TaskTimer.objects.create(task_id=task_id)  # New TaskTimer object with task id
+            return JsonResponse({'success': True})  # Response to js
+        elif action == 'stop':
+            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))  # Get start_time from session
+            end_time = timezone.now()  # end_time
+            duration = end_time - start_time  # Time elapsed between start_time and end_time
+            timer = TaskTimer.objects.filter(start_time=start_time).first()  # Filter TaskTimer objects to find the right one
+            timer.time_ended = end_time  # Set end_time to timer
+            timer.time_elapsed = duration  # Set duration to timer
+            timer.save()  # Save timer
+            return JsonResponse({'success': True})  # Response to js
+    return render(request, 'timer.html')
