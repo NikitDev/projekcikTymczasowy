@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm
 from django.utils import timezone
@@ -27,8 +27,7 @@ def view_profile(request):
 
 
 def view_project(request, project_id):
-    project = Project.objects.get(pk=project_id)
-    form = TaskForm()
+    project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -36,8 +35,11 @@ def view_project(request, project_id):
             description = form.cleaned_data['description']
             task = Task.objects.create(task_name=task_name, description=description, project_id=project)
             return redirect('view_project', project_id)
+    else:
+        form = TaskForm()
+
     context = {
-        "project": Project.objects.get(pk=project_id),
+        "project": project,
         "form": form,
         "tasks": Task.objects.filter(project_id=project_id)
     }
@@ -54,8 +56,29 @@ def create_project(request):
             return redirect('home')
     else:
         form = ProjectForm()
-    return render(request, "licznik_czasu/create_project.html", {'form': form})
 
+    context = {
+        'form': form
+    }
+    return render(request, "licznik_czasu/create_project.html", context)
+
+
+def view_task(request, project_id, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('view_task', project_id, task_id)
+    else:
+        form = TaskForm(instance=task)
+
+    context = {
+        "form": form,
+        "task": task,
+        "project_id": project_id
+    }
+    return render(request, "licznik_czasu/view_task.html", context)
 
 def timer(request, task_id, pk):
     if request.method == 'POST':

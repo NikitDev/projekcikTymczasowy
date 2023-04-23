@@ -1,0 +1,70 @@
+{% extends "account/base.html" %}
+{% block head_title %}Task: {{ task.task_name }}{% endblock %}
+
+{% block content %}
+<html>
+
+<head>
+</head>
+
+<body class="w-100 flex-fill justify-content-center">
+<form method="POST">
+    {% csrf_token %}
+    <div class="container h-auto w-100 d-flex flex-column rounded bg-white p-5 shadow-lg mb-3" style="--bs-bg-opacity: .3; flex-basis: 100%">
+        <div class="d-flex justify-content-between mb-4">
+            <h1 class="fs-1">Task id: {{ task.id }}</h1>
+            <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'view_project' project_id %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+            </a>
+        </div>
+        <div class="container d-flex col">
+            <div class="w-50 m-4">
+                {% for field in form %}
+                {% if field.errors %}
+                <div>
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+                <div class="form-floating mb-3">
+                    {{ field }}
+                    {{ field.label_tag }}
+                </div>
+                {% endfor %}
+                <div class="form-floating mb-3">
+                    <output class="form-control" name="task-creation-date" id="task-creation-date">{{ task.creation_date }}</output>
+                    <label for="task-creation-date">Data utworzenia</label>
+                </div>
+                <button class="btn btn-primary mb-3 w-100" type="submit">Zapisz informacje</button>
+            </div>
+            <div class="container rounded bg-white w-50 m-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="2">Pracownicy</th>
+                        </tr>
+                        <tr>
+                            <th scope="col">Imię</th>
+                            <th scope="col">Nazwisko</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                        </tr>
+                        <tr>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+
+</html>
+{% endblock %}

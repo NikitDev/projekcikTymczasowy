@@ -8,32 +8,59 @@
 </head>
 
 <body class="w-100 flex-fill justify-content-center">
-<form class="main-form" method="POST">
+<form method="POST">
     {% csrf_token %}
-    <div class="container h-auto w-100 d-flex flex-column rounded bg-secondary p-5 shadow-lg mb-3" style="--bs-bg-opacity: .3; flex-basis: 100%">
+    <div class="container h-auto w-100 d-flex flex-column rounded bg-white p-5 shadow-lg mb-3" style="--bs-bg-opacity: .3; flex-basis: 100%">
         <div class="d-flex justify-content-between mb-4">
             <h1 class="fs-1">Projekt id: {{ project.id }}</h1>
-            <a class="btn btn-primary mb-3 pt-2" href="{% url 'home' %}">
+            <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'home' %}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
                 </svg>
             </a>
         </div>
-        <div class="mb-3">
-            <label for="project-name">Nazwa projektu</label>
-            <output class="form-control" name="project-name" id="project-name">{{ project.project_name }}</output>
-        </div>
-        <div class="mb-3">
-            <label for="project-client">Klient</label>
-            <output class="form-control" name="project-client" id="project-client">{{ project.client_id }}</output>
-        </div>
-        <div class="mb-3">
-            <label>Opis projektu</label>
-            <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
+        <div class="container d-flex col">
+            <div class="w-50 m-4">
+                <div class="form-floating mb-3">
+                    <output class="form-control" name="project-name" id="project-name">{{ project.project_name }}</output>
+                    <label for="project-name">Nazwa projektu</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <output class="form-control" name="project-client" id="project-client">{{ project.client_id }}</output>
+                    <label for="project-client">Klient</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <output class="form-control" name="project-description" id="project-description" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
+                    <label for="project-description">Opis projektu</label>
+                </div>
+            </div>
+            <div class="container rounded bg-white w-50 m-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="2">Pracownicy</th>
+                        </tr>
+                        <tr>
+                            <th scope="col">Imię</th>
+                            <th scope="col">Nazwisko</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                        </tr>
+                        <tr>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="d-flex col justify-content-between">
             <h1 class="">Zadania</h1>
-            <button id="myInput" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">+</button>
+            <button id="myInput" type="button" class="btn btn-primary mb-3 text-center" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">+</button>
         </div>
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -62,15 +89,22 @@
                 </div>
             </div>
         </div>
-        {% for task in tasks %}
-            <div class="mb-3">
-                <p>Task</p>
-                <output class="form-control">Task name: {{ task.task_name }}</output>
-                <output class="form-control" style="height: fit-content; overflow-wrap: break-word;">Description: {{ task.description }}</output>
-                <output class="form-control">Creation date: {{ task.creation_date }}</output>
-                <output class="form-control">Project: {{ task.project_id }}</output>
-            </div>
-        {% endfor %}
+        <div class="container mt-5">
+            <section>
+                <div class="row d-flex justify-content-center gap-3">
+                    {% for task in tasks %}
+                    <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_task' project.id task.id %}" style="background-color: #000080; max-width: 30%; color: #e7e5e4">
+                        <p class="text-truncate fs-4 fw-bold">
+                            {{ task.task_name }}
+                        </p>
+                        <p>
+                            Pracownik: {{ task.description }}
+                        </p>
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
     </div>
 </form>
 </body>

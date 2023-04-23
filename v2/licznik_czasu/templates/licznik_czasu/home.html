@@ -12,7 +12,7 @@
 </head>
 
 <body class="container">
-    <form class="d-flex row p-5 bg-secondary w-100 rounded shadow-lg justify-content-center" style="--bs-bg-opacity: .3">
+    <form class="d-flex row p-5 bg-white w-100 rounded shadow-lg justify-content-center" style="--bs-bg-opacity: .3">
         {% csrf_token %}
         
         {% if user.is_authenticated %}
@@ -27,7 +27,7 @@
             <section>
                 <div class="row d-flex justify-content-center gap-3">
                     {% for project in projects %}
-                    <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_project' project.id %}" style="background-color: #71717a; max-width: 30%; color: #e7e5e4">
+                    <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_project' project.id %}" style="background-color: #000080; max-width: 30%; color: #e7e5e4">
                         <p class="text-truncate fs-4 fw-bold">
                             {{ project.project_name }}
                         </p>
