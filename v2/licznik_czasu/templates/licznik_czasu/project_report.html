@@ -1,0 +1,50 @@
+{% extends 'account/base.html' %}
+
+{% block content %}
+<h1>Project Report</h1>
+
+
+<form method="post" action="{% url 'project_report' %}">
+  {% csrf_token %}
+  <label for="project">Select a project:</label>
+  <select name="project" id="project">
+    {% for project in projects %}
+    <option value="{{ project.id }}">{{ project.project_name }}</option>
+    {% endfor %}
+  </select>
+  <br><br>
+  <label for="time_filter">Filter by time:</label>
+  <select name="time_filter" id="time_filter">
+    {% for key, value in time_filters.items %}
+    <option value="{{ key }}">{{ key }} ({{ value|date:"Y-m-d" }})</option>
+    {% endfor %}
+  </select>
+  <br><br>
+  <button type="submit">Generate report</button>
+</form>
+
+
+
+<h2>Tasks for project "{{ project.project_name }}"</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Task Name</th>
+      <th>Task Start Date</th>
+      <th>Time Spent (minutes)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for task in tasktimer %}
+    <tr>
+      <td>{{ task.name }}</td>
+      <td>{{ task.time_started }}</td>
+      <td>{{ task.time_elapsed }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+{% endblock %}

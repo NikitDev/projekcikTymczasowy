@@ -1,8 +1,12 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
+from django.views.generic import TemplateView
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm
-from django.utils import timezone
-from django.http import JsonResponse
+from xhtml2pdf import pisa
+from datetime import datetime, timedelta
+
 
 
 def home(request):
@@ -57,22 +61,62 @@ def create_project(request):
     return render(request, "licznik_czasu/create_project.html", {'form': form})
 
 
-def timer(request, task_id, pk):
+def project_report(request):
+    if request.user.who_is != 'CL':
+        return HttpResponse('You are not authorized to access this page.')
+
+    projects = Project.objects.filter(client__user=request.user)
+
+    last_day = datetime.now() - timedelta(days=1)
+    last_week = datetime.now() - timedelta(weeks=1)
+    last_month = datetime.now() - timedelta(weeks=4)
+
+    time_filters = {
+        'Last day': last_day,
+        'Last week': last_week,
+        'Last month': last_month
+    }
+
+    context = {
+        'projects': projects,
+        'time_filters': time_filters,
+    }
+
     if request.method == 'POST':
-        action = request.POST.get('action')  # Get the value of the action attribute to be able to determine whether we are starting or pausing the timer
-        if action == 'start':
-            start_time = timezone.now()  # Get the
-            request.session['start_time'] = start_time.timestamp()  # Keep the start time in the session for easy access later
-            timer = TaskTimer.objects.create(task_id=task_id)  # New TaskTimer object with task id
-            request.session['pk'] = timer.pk
-            return JsonResponse({'success': True})  # Response to js
-        elif action == 'stop':
-            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))  # Get start_time from session
-            end_time = timezone.now()  # end_time
-            duration = end_time - start_time  # Time elapsed between start_time and end_time
-            timer = TaskTimer.objects.filter(pk=request.session.get('pk'))  # Filter TaskTimer via pk to find the right one
-            timer.time_ended = end_time  # Set end_time to timer
-            timer.time_elapsed = duration  # Set duration to timer
-            timer.save()  # Save timer
-            return JsonResponse({'success': True})  # Response to js
-    return render(request, 'timer.html')
+        selected_project_id = request.POST.get('project', None)
+        selected_time_filter = request.POST.get('time_filter', None)
+
+        if selected_project_id is not None:
+            selected_project = Project.objects.get(id=selected_project_id)
+
+            if selected_time_filter is not None:
+                selected_time_filter_date = time_filters[selected_time_filter]
+                tasks = Task.objects.filter(project=selected_project)
+                tasktimers = []
+                for task in tasks:
+                    task_time = list(TaskTimer.objects.filter(task=task))
+                    for time in task_time:
+                        if time.time_started.date() >= selected_time_filter_date.date():
+                            taskinfo = {
+                                'name': time.task.task_name,
+                                'time_started': time.time_started,
+                                'time_elapsed': time.time_elapsed
+                            }
+                            tasktimers.append(taskinfo)
+                print(tasktimers)
+
+        else:
+            tasks = None
+
+        if tasks is not None:
+            context = {
+                'projects': projects,
+                'time_filters': time_filters,
+                'project': selected_project,
+                'tasks': tasks,
+                'tasktimer': tasktimers,
+                'time_filter': selected_time_filter
+            }
+
+    return render(request, 'licznik_czasu/project_report.html', context)
+
