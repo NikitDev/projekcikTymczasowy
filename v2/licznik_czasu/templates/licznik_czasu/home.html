@@ -11,50 +11,52 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 </head>
 
-<body class="container">
-    <form class="d-flex row p-5 bg-white w-100 rounded shadow-lg justify-content-center" style="--bs-bg-opacity: .3">
+<body class="container justify-content-center align-items-center scroll">
+    <form>
         {% csrf_token %}
-        
-        {% if user.is_authenticated %}
 
-        <div class="container d-flex justify-content-center align-items-center">
+        {% if user.is_authenticated %}
+        <div class="d-flex row p-5 bg-white w-100 rounded shadow-lg justify-content-center" style="--bs-bg-opacity: .3">
+            <div class="container d-flex justify-content-center align-items-center">
             <h1>Projekty użytkownika</h1>
-        </div>
-        <div class="container d-flex justify-content-center align-items-center">
-            <a type="button" class="btn btn-primary mt-3" href="{% url 'create_project' %}">Stwórz nowy projekt</a>
-        </div>
-        <div class="container mt-5">
-            <section>
-                <div class="row d-flex justify-content-center gap-3">
-                    {% for project in projects %}
-                    <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_project' project.id %}" style="background-color: #000080; max-width: 30%; color: #e7e5e4">
-                        <p class="text-truncate fs-4 fw-bold">
-                            {{ project.project_name }}
-                        </p>
-                        <p>
-                            Klient: {{ project.client_id }}
-                        </p>
-                        <p class="text-truncate">
-                            Opis Projektu:  {{ project.description }}
-                        </p>
-                    </a>
-                    {% endfor %}
-                </div>
-            </section>
-        </div>
+            </div>
+            <div class="container d-flex justify-content-center align-items-center">
+                <a type="button" class="btn btn-primary mt-3" href="{% url 'create_project' %}">|</a>
+            </div>
+            <div class="container mt-5">
+                <section>
+                    <div class="row d-flex justify-content-center gap-3">
+                        {% for project in projects %}
+                        <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_project' project.id %}" style="background-color: #0b5394; max-width: 30%; color: #e7e5e4">
+                            <p class="text-truncate fs-4 fw-bold">
+                                {{ project.project_name }}
+                            </p>
+                            <p>
+                                Klient: {{ project.client_id }}
+                            </p>
+                            <p class="text-truncate">
+                                Opis Projektu:  {{ project.description }}
+                            </p>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            </div>
 
         {% else %}
-
-        <div class="container h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5" style="--bs-bg-opacity: .3">
-            <p>Jesteś obecnie wylogowany</p>
-            <br>
-            <p> Aby się zalogować naciśnij przycisk poniżej</p>
-            <a type="button" class="btn btn-primary w-100 mb-3" href="{% url 'account_login' %}">Zaloguj się</a>
-            <br>
-            <p>Aby stworzyć konto naciśnij przycisk poniżej</p>
-            <a type="button" class="btn btn-primary w-100" href="{% url 'account_signup' %}">Zarejestruj się</a>
+        <div class="row p-5 bg-white rounded shadow-lg justify-content-center" style="--bs-bg-opacity: .3">
+            <div class="container h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded p-5" style="--bs-bg-opacity: .3">
+                <p class="fst-italic fs-3">Jesteś obecnie wylogowany</p>
+                <br>
+                <p class="fs-5"> Aby się zalogować naciśnij przycisk poniżej</p>
+                <a type="button" class="btn btn-primary w-100 mb-3" href="{% url 'account_login' %}">Zaloguj się</a>
+                <br>
+                <p class="fs-5">Aby stworzyć konto naciśnij przycisk poniżej</p>
+                <a type="button" class="btn btn-primary w-100" href="{% url 'account_signup' %}">Zarejestruj się</a>
+            </div>
         </div>
-
         {% endif %}
     </form>
 </body>

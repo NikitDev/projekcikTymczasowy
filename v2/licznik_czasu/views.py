@@ -33,7 +33,7 @@ def view_project(request, project_id):
         if form.is_valid():
             task_name = form.cleaned_data['task_name']
             description = form.cleaned_data['description']
-            task = Task.objects.create(task_name=task_name, description=description, project_id=project)
+            task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
             return redirect('view_project', project_id)
     else:
         form = TaskForm()
