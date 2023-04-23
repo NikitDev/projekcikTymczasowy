@@ -38,26 +38,26 @@
                 </div>
                 <button class="btn btn-primary mb-3 w-100" type="submit">Zapisz informacje</button>
             </div>
-            <div class="container rounded bg-white w-50 m-4">
+            <div class="container rounded bg-white w-50 m-4 shadow">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="text-center" colspan="2">Pracownicy</th>
+                            <th class="text-center" colspan="3">Pracownicy</th>
                         </tr>
                         <tr>
+                            <th scope="col">NU</th>
                             <th scope="col">Imię</th>
                             <th scope="col">Nazwisko</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for employee in task.employee.all %}
                         <tr>
-                            <td>Mark</td>
-                            <td>Otto</td>
+                            <td>{{ employee.user.username }}</td>
+                            <td>{{ employee.user.first_name }}</td>
+                            <td>{{ employee.user.last_name }}</td>
                         </tr>
-                        <tr>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
