@@ -26,7 +26,7 @@
                     <label for="project-name">Nazwa projektu</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <output class="form-control" name="project-client" id="project-client">{{ project.client_id }}</output>
+                    <output class="form-control" name="project-client" id="project-client">{{ project.client }}</output>
                     <label for="project-client">Klient</label>
                 </div>
                 <div class="form-floating mb-3">
@@ -38,22 +38,22 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="text-center" colspan="2">Pracownicy</th>
+                            <th class="text-center" colspan="3">Pracownicy</th>
                         </tr>
                         <tr>
+                            <th scope="col">NU</th>
                             <th scope="col">Imię</th>
                             <th scope="col">Nazwisko</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for employee in project.employee.all %}
                         <tr>
-                            <td>Mark</td>
-                            <td>Otto</td>
+                            <td>{{ employee.user.username }}</td>
+                            <td>{{ employee.user.first_name }}</td>
+                            <td>{{ employee.user.last_name }}</td>
                         </tr>
-                        <tr>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

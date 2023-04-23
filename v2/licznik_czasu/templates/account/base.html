@@ -18,7 +18,13 @@
         <div class="container-fluid">
             <a class="navbar-brand"></a>
             {% if user.is_authenticated %}
-            <p class="text-white">Zalogowano jako <b>{% user_display user %}</b></p>
+            <p class="text-white text-center">Zalogowano jako <b>{% user_display user %}</b><br>Konto
+                {% if user.is_superuser %}
+                <b>Superuser</b>
+                {% else %}
+                <b>{{ user.get_who_is_display }}</b>
+                {% endif %}
+            </p>
             {% endif %}
             <button class="navbar-toggler bg-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -32,6 +38,11 @@
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 fs-5">
                     <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Strona Główna</a>
                     {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'view_profile' %}">{% trans "Profil" %}</a>
                     </li>
