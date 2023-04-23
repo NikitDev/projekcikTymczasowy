@@ -8,7 +8,6 @@ from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 
 
-
 def home(request):
     projects = Project.objects.all().order_by('id')
     context = {'projects': projects}
@@ -83,11 +82,12 @@ def project_report(request):
     }
 
     if request.method == 'POST':
-        selected_project_id = request.POST.get('project', None)
+        selected_project = request.POST.get('project', None)
         selected_time_filter = request.POST.get('time_filter', None)
+        generate_report = request.POST.get('generate_report', None)
 
-        if selected_project_id is not None:
-            selected_project = Project.objects.get(id=selected_project_id)
+        if selected_project is not None:
+            selected_project = Project.objects.get(id=selected_project)
 
             if selected_time_filter is not None:
                 selected_time_filter_date = time_filters[selected_time_filter]
@@ -103,8 +103,6 @@ def project_report(request):
                                 'time_elapsed': time.time_elapsed
                             }
                             tasktimers.append(taskinfo)
-                print(tasktimers)
-
         else:
             tasks = None
 
@@ -118,5 +116,15 @@ def project_report(request):
                 'time_filter': selected_time_filter
             }
 
-    return render(request, 'licznik_czasu/project_report.html', context)
+        if generate_report is not None:
+            template_path = 'licznik_czasu/project_report.html'
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="project_report.pdf"'
+            template = get_template(template_path)
+            html = template.render(context)
+            pisa_status = pisa.CreatePDF(html, dest=response)
+            if pisa_status.err:
+                return HttpResponse('We had some errors <pre>' + html + '</pre>')
+            return response
 
+    return render(request, 'licznik_czasu/project_report.html', context)
