@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <a class="navbar-brand"></a>
             {% if user.is_authenticated %}
-            <p class="text-white text-center">Zalogowano jako <b>{% user_display user %}</b><br>Konto
+            <p class="text-center mb-0">Zalogowano jako <b>{% user_display user %}</b><br>Konto
                 {% if user.is_superuser %}
                 <b>Superuser</b>
                 {% else %}
