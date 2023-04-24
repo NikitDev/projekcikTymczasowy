@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm
-from django.utils import timezone
+from django.utils import timezone, dateformat
 from django.http import JsonResponse
 
 
@@ -78,9 +78,8 @@ def view_task(request, project_id, task_id):
         "task": task,
         "project_id": project_id
     }
-    return render(request, "licznik_czasu/view_task.html", context)
 
-def timer(request, task_id, pk):
+# timer
     if request.method == 'POST':
         action = request.POST.get('action')  # Get the value of the action attribute to be able to determine whether we are starting or pausing the timer
         if action == 'start':
@@ -91,11 +90,14 @@ def timer(request, task_id, pk):
             return JsonResponse({'success': True})  # Response to js
         elif action == 'stop':
             start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))  # Get start_time from session
-            end_time = timezone.now()  # end_time
+            end_time = timezone.datetime.fromtimestamp(timezone.now().timestamp())  # end_time
+            print("start_time        : ",start_time, type(start_time))
+            print(" end_time         : ",end_time, type(end_time))
             duration = end_time - start_time  # Time elapsed between start_time and end_time
-            timer = TaskTimer.objects.filter(pk=request.session.get('pk'))  # Filter TaskTimer via pk to find the right one
+            timer = TaskTimer.objects.get(pk=request.session.get('pk'))  # Filter TaskTimer via pk to find the right one
             timer.time_ended = end_time  # Set end_time to timer
             timer.time_elapsed = duration  # Set duration to timer
             timer.save()  # Save timer
             return JsonResponse({'success': True})  # Response to js
-    return render(request, 'timer.html')
+
+    return render(request, "licznik_czasu/view_task.html", context)

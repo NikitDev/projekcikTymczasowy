@@ -2,9 +2,13 @@
 {% block head_title %}Task: {{ task.task_name }}{% endblock %}
 
 {% block content %}
+{% load static %}
+
 <html>
 
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'timer.js' %}"></script>
 </head>
 
 <body class="w-100 flex-fill justify-content-center">
@@ -61,6 +65,11 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div>
+            <h1 id="timer-display">00:00:00</h1>
+            <button class="btn btn-primary mb-3" type="button" id="start_button">start</button>
+            <button class="btn btn-primary mb-3" type="button" id="stop_button">stop</button>
         </div>
     </div>
 </form>
