@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
@@ -27,6 +28,7 @@ def view_profile(request):
     return render(request, 'account/profile.html', context)
 
 
+@login_required()
 def view_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
@@ -47,6 +49,7 @@ def view_project(request, project_id):
     return render(request, "licznik_czasu/view_project.html", context)
 
 
+@login_required()
 def create_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -64,6 +67,7 @@ def create_project(request):
     return render(request, "licznik_czasu/create_project.html", context)
 
 
+@login_required()
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)

@@ -1,52 +1,37 @@
 {% extends "account/base.html" %}
+
 {% block head_title %}Home{% endblock %}
 
 {% block content %}
-
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-</head>
-
-<body class="container justify-content-center align-items-center">
-    {% csrf_token %}
-    {% if user.is_authenticated %}
-    <div class="row d-flex justify-content-center w-100 p-5 pb-0 pt-4 bg-white rounded shadow-lg" style="--bs-bg-opacity: .3;">
+{% csrf_token %}
+<div class="h-auto ms-2 me-2 d-flex justify-content-center align-items-center">
+{% if user.is_authenticated %}
+    <div class="w-75 p-5 pb-0 pt-4 mb-4 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3;">
         <div class="container d-flex justify-content-center align-items-center">
             <h1>Projekty użytkownika</h1>
+        </div>
+        <section>
+            <div class="d-flex row justify-content-center gap-3 pt-4 pb-4">
+                {% for project in projects %}
+                <a type="button" class="flex-grow-1 text-decoration-none rounded shadow" href="{% url 'view_project' project.id %}"
+                    style="background-color: #0b5394; max-width: 30%; color: #e7e5e4">
+                    <p class="fs-4 fw-bold text-truncate">
+                        {{ project.project_name }}
+                    </p>
+                    <p>
+                        Klient: {{ project.client_id }}
+                    </p>
+                    <p class="text-truncate">
+                        Opis Projektu:  {{ project.description }}
+                    </p>
+                </a>
+                {% endfor %}
             </div>
-<!--            <div class="container d-flex justify-content-center align-items-center">-->
-<!--                <a type="button" class="btn mt-3 btn-primary" href="{% url 'create_project' %}">|</a>-->
-<!--            </div>-->
-            <div class="container mt-5" style="height: 700px; overflow-y: scroll">
-                <section>
-                    <form>
-                    <div class="row d-flex justify-content-center gap-3">
-                        {% for project in projects %}
-                        <a type="button" class="flex-grow-1 text-decoration-none rounded shadow" href="{% url 'view_project' project.id %}"
-                           style="background-color: #0b5394; max-width: 30%; color: #e7e5e4">
-                            <p class="fs-4 fw-bold text-truncate">
-                                {{ project.project_name }}
-                            </p>
-                            <p>
-                                Klient: {{ project.client_id }}
-                            </p>
-                            <p class="text-truncate">
-                                Opis Projektu:  {{ project.description }}
-                            </p>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    </form>
-                </section>
-            </div>
+        </section>
     </div>
-    {% else %}
-    <div class="row d-flex justify-content-center w-100 p-5 bg-white rounded shadow-lg " style="--bs-bg-opacity: .3">
-        <div class="container d-inline-flex flex-column justify-content-center align-items-center h-auto w-auto p-5 rounded " style="--bs-bg-opacity: .3">
+{% else %}
+    <div class="w-50 p-5 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
+        <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">
             <p class="fst-italic fs-3">Jesteś obecnie wylogowany</p>
             <br>
             <p class="fs-5"> Aby się zalogować naciśnij przycisk poniżej</p>
@@ -56,8 +41,6 @@
             <a type="button" class="btn w-100 btn-primary " href="{% url 'account_signup' %}">Zarejestruj się</a>
         </div>
     </div>
-    {% endif %}
-
-</body>
-</html>
+{% endif %}
+</div>
 {% endblock %}

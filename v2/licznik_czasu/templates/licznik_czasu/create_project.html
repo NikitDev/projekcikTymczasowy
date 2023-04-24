@@ -1,28 +1,19 @@
 {% extends "account/base.html" %}
+
 {% block head_title %}Tworzenie projektu{% endblock %}
 
 {% block content %}
-<html lang="en">
-
-<head>
-</head>
-
-<body class="container d-flex justify-content-center align-items-center">
-    <form class="main-form" method="POST">
-        {% csrf_token %}
-        <div class="container d-inline-flex flex-column justify-content-center align-items-center h-auto w-auto p-5 bg-secondary  rounded shadow-lg"
-             style="--bs-bg-opacity: .3">
-            <h1 class="fs-1 mb-4">Stwórz nowy projekt</h1>
-            {% for field in form %}
-                <div class="form-floating w-100 mb-3">
-                    {{ field }}
-                    {{ field.label_tag }}
-                </div>
-            {% endfor %}
-            <button class="btn mb-3 btn-primary" type="submit">Stwórz projekt</button>
-        </div>
-    </form>
-</body>
-
-</html>
+<form method="POST">
+    {% csrf_token %}
+    <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded shadow-lg bg-secondary" style="--bs-bg-opacity: .3">
+        <h1 class="fs-1 mb-4">Stwórz nowy projekt</h1>
+        {% for field in form %}
+            <div class="form-floating w-100 mb-3">
+                {{ field }}
+                {{ field.label_tag }}
+            </div>
+        {% endfor %}
+        <button class="btn mb-3 btn-primary" type="submit">Stwórz projekt</button>
+    </div>
+</form>
 {% endblock %}
