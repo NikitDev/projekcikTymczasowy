@@ -18,7 +18,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-white p-5"
+        <div class="container d-inline-flex flex-column justify-content-center align-items-center h-auto w-auto p-5 bg-white rounded shadow-lg"
             style="--bs-bg-opacity: .3;">
             <h1 class="fs-1 mb-4">Podgląd profilu</h1>
             {% for field in form %}
@@ -28,8 +28,8 @@
             </div>
             {% endfor %}
             <div class="buttons">
-                <button class="btn btn-primary mb-3" type="submit">Zapisz informacje</button>
-                <a class="btn btn-primary mb-3" href="{% url 'account_change_password' %}">Zmień hasło</a>
+                <button class="btn mb-3 btn-primary " type="submit">Zapisz informacje</button>
+                <a class="btn mb-3 btn-primary " href="{% url 'account_change_password' %}">Zmień hasło</a>
             </div>
         </div>
     </form>

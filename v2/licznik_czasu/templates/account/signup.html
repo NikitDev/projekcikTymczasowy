@@ -17,7 +17,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-white p-5"
+        <div class="container d-inline-flex flex-column justify-content-center align-items-center h-auto w-auto p-5 bg-white rounded shadow-lg"
             style="--bs-bg-opacity: .3">
             <h1 class="fs-1 mb-4">{% trans "Sign Up" %}</h1>
             {% for field in form %}
@@ -31,7 +31,7 @@
                 {{ field.label_tag }}
             </div>
             {% endfor %}
-            <button class="btn btn-primary mb-3" type="submit">{% trans "Sign Up" %}</button>
+            <button class="btn mb-3 btn-primary" type="submit">{% trans "Sign Up" %}</button>
             <p>Posiadasz już konto?
                 <a class="text-black" href="{{ login_url }}">{% trans "Sign In" %}</a>
             </p>

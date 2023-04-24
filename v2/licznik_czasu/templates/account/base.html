@@ -12,26 +12,29 @@
 
 {% load account %}
 
-<body style="padding-top: 70px; background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%); " >
+<body style="padding-top: 100px; !important background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%);">
     {% block body %}
     <nav class="navbar fixed-top bg-white">
         <div class="container-fluid">
-            <a class="navbar-brand"></a>
-            {% if user.is_authenticated %}
-            <p class="text-center mb-0">Zalogowano jako <b>{% user_display user %}</b><br>Konto
-                {% if user.is_superuser %}
-                <b>Superuser</b>
-                {% else %}
-                <b>{{ user.get_who_is_display }}</b>
-                {% endif %}
-            </p>
-            {% endif %}
+            <a class="navbar-brand mb-0 pb-0 pt-0 text-center " style="height: 60px;">
+                <p class="mb-0">
+                    {% if user.is_authenticated %}
+                    Zalogowano jako <b>{% user_display user %}</b><br>Konto
+                    {% if user.is_superuser %}
+                    <b>Superuser</b>
+                    {% else %}
+                    <b>{{ user.get_who_is_display }}</b>
+                    {% endif %}
+                    {% else %}
+                    {% endif %}
+                </p>
+            </a>
             <button class="navbar-toggler bg-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title fst-italic fs-4" id="offcanvasNavbarLabel">Panel Sterowania</h5>
+                <h5 class="offcanvas-title fs-4 fst-italic " id="offcanvasNavbarLabel">Panel Sterowania</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">

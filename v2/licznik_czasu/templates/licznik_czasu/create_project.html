@@ -10,15 +10,16 @@
 <body class="container d-flex justify-content-center align-items-center">
     <form class="main-form" method="POST">
         {% csrf_token %}
-        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5" style="--bs-bg-opacity: .3">
+        <div class="container d-inline-flex flex-column justify-content-center align-items-center h-auto w-auto p-5 bg-secondary  rounded shadow-lg"
+             style="--bs-bg-opacity: .3">
             <h1 class="fs-1 mb-4">Stwórz nowy projekt</h1>
             {% for field in form %}
-                <div class="form-floating mb-3 w-100">
+                <div class="form-floating w-100 mb-3">
                     {{ field }}
                     {{ field.label_tag }}
                 </div>
             {% endfor %}
-            <button class="btn btn-primary mb-3" type="submit">Stwórz projekt</button>
+            <button class="btn mb-3 btn-primary" type="submit">Stwórz projekt</button>
         </div>
     </form>
 </body>
