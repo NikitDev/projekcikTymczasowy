@@ -66,36 +66,35 @@ def create_project(request):
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
-            return redirect('view_task', project_id, task_id)
+        action = request.POST.get('action')
+        if action == 'start':
+            start_time = timezone.now()
+            request.session['start_time'] = start_time.timestamp()
+            timer = TaskTimer.objects.create(task_id=task_id)
+            request.session['pk'] = timer.pk
+            return JsonResponse({'success': True})
+        elif action == 'stop':
+            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
+            end_time = timezone.datetime.fromtimestamp(timezone.now().timestamp())
+            duration = end_time - start_time
+            timer = TaskTimer.objects.get(pk=request.session.get('pk'))
+            timer.time_ended = end_time
+            timer.time_elapsed = duration
+            timer.save()
+            request.session['start_time'] = None
+            return JsonResponse({'success': True})
+        else:
+            form = TaskForm(request.POST, instance=task)
+            if form.is_valid():
+                form.save()
+                return redirect('view_task', project_id, task_id)
     else:
         form = TaskForm(instance=task)
 
     context = {
         "form": form,
         "task": task,
-        "project_id": project_id
+        "project_id": project_id,
+        'current': request.session.get('start_time')
     }
-
-# timer
-    if request.method == 'POST':
-        action = request.POST.get('action')  # Get the value of the action attribute to be able to determine whether we are starting or pausing the timer
-        if action == 'start':
-            start_time = timezone.now()  # Get the
-            request.session['start_time'] = start_time.timestamp()  # Keep the start time in the session for easy access later
-            timer = TaskTimer.objects.create(task_id=task_id)  # New TaskTimer object with task id
-            request.session['pk'] = timer.pk
-            return JsonResponse({'success': True})  # Response to js
-        elif action == 'stop':
-            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))  # Get start_time from session
-            end_time = timezone.datetime.fromtimestamp(timezone.now().timestamp())  # end_time
-            duration = end_time - start_time  # Time elapsed between start_time and end_time
-            timer = TaskTimer.objects.get(pk=request.session.get('pk'))  # Filter TaskTimer via pk to find the right one
-            timer.time_ended = end_time  # Set end_time to timer
-            timer.time_elapsed = duration  # Set duration to timer
-            timer.save()  # Save timer
-            return JsonResponse({'success': True})  # Response to js
-
     return render(request, "licznik_czasu/view_task.html", context)

@@ -1,39 +1,52 @@
 $(document).ready(function() {
-    var timerInterval, start_time, elapsed;
+    var timerInterval, start_time, dec;
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
 
 
-    $("#start_button").click(function() {
-        var data = {
-        "action": "start",
-        "csrfmiddlewaretoken": csrf
+    if (!(value == 'None')) {
+        start_time = new Date(parseInt(value)*1000);
+        timerInterval = setInterval(timer1, 1000);
+        dec = 1;
+    }
+    else {
+        dec = 0;
+    };
+
+    function timer1() {
+        var now = new Date().getTime();
+        var elapsed = now - start_time;
+        var hours = Math.floor(elapsed / 3600000);
+        var minutes = Math.floor((elapsed % 3600000) / 60000);
+        var seconds = Math.floor((elapsed % 60000) / 1000);
+
+        var timeString = hours.toString().padStart(2, '0') + ':' +
+            minutes.toString().padStart(2, '0') + ':' +
+            seconds.toString().padStart(2, '0');
+        $("#timer-display").text(timeString);
+    };
+
+    $("#timer_button").click(function() {
+        if (dec == 0) {
+            var data = {
+            "action": "start",
+            "csrfmiddlewaretoken": csrf
+            };
+            $.post("", data, function(response) {
+                    if (response.success) {
+                        start_time = new Date().getTime();
+                        timerInterval = setInterval(timer1, 1000);
+                    }
+            });
+            dec = 1;
+        }
+        else if (dec == 1) {
+            clearInterval(timerInterval);
+            $('#timer-display').text('00:00:00');
+            $.post('', {
+                'csrfmiddlewaretoken': csrf,
+                'action': "stop"
+            });
+            dec = 0;
         };
-        $.post("", data, function(response) {
-
-                if (response.success) {
-                    start_time = new Date().getTime();
-                    timerInterval = setInterval(function() {
-                        var now = new Date().getTime();
-                        elapsed = now - start_time;
-                        var hours = Math.floor(elapsed / 3600000);
-                        var minutes = Math.floor((elapsed % 3600000) / 60000);
-                        var seconds = Math.floor((elapsed % 60000) / 1000);
-                        var timeString = hours.toString().padStart(2, '0') + ':' +
-                            minutes.toString().padStart(2, '0') + ':' +
-                            seconds.toString().padStart(2, '0');
-                        $("#timer-display").text(timeString);
-                    }, 1000);
-                }
-
-        });
-    });
-
-    $("#stop_button").click(function() {
-        clearInterval(timerInterval);
-        $('#timer-display').text('00:00:00');
-        $.post('', {
-            'csrfmiddlewaretoken': csrf,
-            'action': "stop"
-        });
     });
 });
