@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Project, Client, Employee, Task, TaskTimer
-from .forms import UserForm, ProjectForm, TaskForm
+from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
+from django import forms
 from django.utils import timezone
 from django.http import JsonResponse
 
@@ -65,16 +66,23 @@ def create_project(request):
 
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
+    project = get_object_or_404(Project, pk=project_id)
+    TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
+        queryset=project.employee, widget=forms.CheckboxSelectMultiple())
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
+        form2 = TaskEmployeeForm(request.POST, instance=task)
+        if all([form.is_valid(), form2.is_valid()]):
             form.save()
+            form2.save()
             return redirect('view_task', project_id, task_id)
     else:
         form = TaskForm(instance=task)
+        form2 = TaskEmployeeForm(instance=task)
 
     context = {
         "form": form,
+        "form2": form2,
         "task": task,
         "project_id": project_id
     }

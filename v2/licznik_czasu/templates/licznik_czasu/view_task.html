@@ -36,10 +36,10 @@
                     <output class="form-control" name="task-creation-date" id="task-creation-date">{{ task.creation_date }}</output>
                     <label for="task-creation-date">Data utworzenia</label>
                 </div>
-                <button class="btn btn-primary mb-3 w-100" type="submit">Zapisz informacje</button>
+                <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>
             </div>
-            <div class="container rounded bg-white w-50 m-4 shadow">
-                <table class="table">
+            <div class="container rounded bg-white w-50 m-4">
+                <table class="table table-striped table-hover bg-white">
                     <thead>
                         <tr>
                             <th class="text-center" colspan="3">Pracownicy</th>
@@ -60,6 +60,28 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <button type="button" class="btn btn-primary mb-3 w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">
+                    Dodaj pracowników
+                </button>
+            </div>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Dodaj pracowników</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in form2 %}
+                            {{ field }}
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                            <button type="submit" class="btn btn-primary">Zapisz</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
