@@ -91,8 +91,6 @@ def view_task(request, project_id, task_id):
         elif action == 'stop':
             start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))  # Get start_time from session
             end_time = timezone.datetime.fromtimestamp(timezone.now().timestamp())  # end_time
-            print("start_time        : ",start_time, type(start_time))
-            print(" end_time         : ",end_time, type(end_time))
             duration = end_time - start_time  # Time elapsed between start_time and end_time
             timer = TaskTimer.objects.get(pk=request.session.get('pk'))  # Filter TaskTimer via pk to find the right one
             timer.time_ended = end_time  # Set end_time to timer
