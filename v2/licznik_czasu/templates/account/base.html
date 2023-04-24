@@ -14,56 +14,49 @@
 
 <body style="padding-top: 100px; !important background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%);">
     {% block body %}
-    <nav class="navbar fixed-top bg-white">
-        <div class="container-fluid">
-            <a class="navbar-brand mb-0 pb-0 pt-0 text-center " style="height: 60px;">
-                <p class="mb-0">
-                    {% if user.is_authenticated %}
-                    Zalogowano jako <b>{% user_display user %}</b><br>Konto
-                    {% if user.is_superuser %}
-                    <b>Superuser</b>
-                    {% else %}
-                    <b>{{ user.get_who_is_display }}</b>
-                    {% endif %}
-                    {% else %}
-                    {% endif %}
-                </p>
-            </a>
-            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title fs-4 fst-italic " id="offcanvasNavbarLabel">Panel Sterowania</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 fs-5">
-                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Strona Główna</a>
-                    {% if user.is_authenticated %}
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'view_profile' %}">{% trans "Profil" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-                    </li>
-                    {% endif %}
+    <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand">Licznik czasu</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Strona Główna</a>
+            </li>
+            {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
+            </li>
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle rounded" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #e3e7e6;">
+                  {% if user.is_authenticated %}
+                  Zalogowano jako <b>{% user_display user %}</b><br>Konto
+                  {% if user.is_superuser %}
+                  <b>Superuser</b>
+                  {% else %}
+                  <b>{{ user.get_who_is_display }}</b>
+                  {% endif %}
+                  {% else %}
+                  {% endif %}
+                </a>
+                <ul class="dropdown-menu" style="background-color: #e3e7e6;">
+                    <li><a class="dropdown-item" href="{% url 'view_profile' %}">{% trans "Profil" %}</a></li>
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>
+                  {% else %}
+                    <li><a class="dropdown-item" href="{% url 'account_login' %}">{% trans "Sign In" %}</a></li>
+                    <li><a class="dropdown-item" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a></li>
+                  {% endif %}
                 </ul>
-            </div>
-            </div>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
     {% block content %}
     {% endblock %}
