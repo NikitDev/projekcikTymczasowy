@@ -3,13 +3,15 @@ $(document).ready(function() {
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
 
 
-    if (!(value == 'None')) {
-        start_time = new Date(parseInt(value)*1000);
-        timerInterval = setInterval(timer1, 1000);
-        flag = false;
+    if (value == 'None') {
+        flag = true;
+        $("#timer_button").text("START");
     }
     else {
-        flag = true;
+        start_time = new Date(parseInt(value)*1000).getTime();
+        timerInterval = setInterval(timer1, 1000);
+        flag = false;
+        $("#timer_button").text("STOP");
     };
 
     function timer1() {
@@ -27,6 +29,7 @@ $(document).ready(function() {
 
     $("#timer_button").click(function() {
         if (flag) {
+        // start
             var data = {
             "action": "start",
             "csrfmiddlewaretoken": csrf
@@ -38,10 +41,13 @@ $(document).ready(function() {
                     }
             });
             flag = false;
+            $("#timer_button").text("STOP");
         }
         else {
+        // stop
             clearInterval(timerInterval);
             $('#timer-display').text('00:00:00');
+            $("#timer_button").text("START");
             $.post('', {
                 'csrfmiddlewaretoken': csrf,
                 'action': "stop"
