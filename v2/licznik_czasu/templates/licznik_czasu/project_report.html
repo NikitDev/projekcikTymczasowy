@@ -1,12 +1,12 @@
 {% extends 'account/base.html' %}
 
 {% block content %}
-<h1>Project Report</h1>
+<h1>Raportowanie projektów</h1>
 
 
 <form method="post" action="{% url 'project_report' %}">
   {% csrf_token %}
-  <label for="project">Select a project:</label>
+  <label for="project">Wybierz projekt:</label>
   <select name="project" id="project">
     {% for project in projects %}
     <option value="{{ project.id }}">{{ project.project_name }}</option>
@@ -20,18 +20,18 @@
     {% endfor %}
   </select>
   <br><br>
-  <input type="submit" name="generate_report" value="1">Wygeneruj raport</input>
-  <button type="submit">wyświetl</button>
+  <input type="submit" name="generate_report" value="Generuj Raport">
+  <button type="submit">Wyświetl wyniki</button>
 </form>
 
 
-<h2>Tasks for project "{{ project.project_name }}"</h2>
+<h2>Zadania dla projektu "{{ project.project_name }}"</h2>
 <table>
   <thead>
     <tr>
-      <th>Task Name</th>
-      <th>Task Start Date</th>
-      <th>Time Spent (minutes)</th>
+      <th>Nazwa zadania</th>
+      <th>Data rozpoczęcia</th>
+      <th>Czas pracy nad zadaniem</th>
     </tr>
   </thead>
   <tbody>

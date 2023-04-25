@@ -1,0 +1,25 @@
+{% block content %}
+<h1>Raport projekty</h1>
+<h2>Zadania dla projektu "{{ project.project_name }}"</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Nazwa zadania</th>
+      <th>Data rozpoczęcia</th>
+      <th>Czas pracy nad zadaniem</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for task in tasktimer %}
+    <tr>
+      <td>{{ task.name }}</td>
+      <td>{{ task.time_started }}</td>
+      <td>{{ task.time_elapsed }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+{% endblock %}

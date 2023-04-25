@@ -1,7 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from django.views.generic import TemplateView
 from .models import Project, Client, Employee, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm
 from xhtml2pdf import pisa
@@ -117,14 +116,14 @@ def project_report(request):
             }
 
         if generate_report is not None:
-            template_path = 'licznik_czasu/project_report.html'
+            template_path = 'licznik_czasu/pdf_template.html'
             response = HttpResponse(content_type='application/pdf')
             response['Content-Disposition'] = 'filename="project_report.pdf"'
             template = get_template(template_path)
             html = template.render(context)
             pisa_status = pisa.CreatePDF(html, dest=response)
             if pisa_status.err:
-                return HttpResponse('We had some errors <pre>' + html + '</pre>')
+                return HttpResponse('error')
             return response
 
     return render(request, 'licznik_czasu/project_report.html', context)
