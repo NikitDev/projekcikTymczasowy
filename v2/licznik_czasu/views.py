@@ -74,12 +74,32 @@ def view_task(request, project_id, task_id):
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
         queryset=project.employee, widget=forms.CheckboxSelectMultiple())
     if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        form2 = TaskEmployeeForm(request.POST, instance=task)
-        if all([form.is_valid(), form2.is_valid()]):
-            form.save()
-            form2.save()
-            return redirect('view_task', project_id, task_id)
+        action = request.POST.get('action')
+        if action == 'start':
+            start_time = timezone.now()
+            request.session['start_time'] = start_time.timestamp()
+            timer = TaskTimer.objects.create(task_id=task_id)
+            request.session['pk'] = timer.pk
+            return JsonResponse({'success': True})
+        elif action == 'stop':
+            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
+            end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
+            duration = end_time - start_time
+            # Filter TaskTimer via pk to find the right one
+            timer = TaskTimer.objects.get(pk=request.session.get('pk'))
+            timer.time_ended = end_time
+            timer.time_elapsed = duration
+            timer.save()
+            request.session['start_time'] = None
+            return JsonResponse({'success': True})
+
+        else:
+            form = TaskForm(request.POST, instance=task)
+            form2 = TaskEmployeeForm(request.POST, instance=task)
+            if all([form.is_valid(), form2.is_valid()]):
+                form.save()
+                form2.save()
+                return redirect('view_task', project_id, task_id)
     else:
         form = TaskForm(instance=task)
         form2 = TaskEmployeeForm(instance=task)
@@ -88,32 +108,7 @@ def view_task(request, project_id, task_id):
         "form": form,
         "form2": form2,
         "task": task,
-        "project_id": project_id
+        "project_id": project_id,
+        'current': request.session.get('start_time')
     }
     return render(request, "licznik_czasu/view_task.html", context)
-
-
-def timer(request, task_id, pk):
-    if request.method == 'POST':
-        # Get the value of the action attribute to be able to determine whether we are starting or pausing the timer
-        action = request.POST.get('action')
-        if action == 'start':
-            start_time = timezone.now()
-            # Keep the start time in the session for easy access later
-            request.session['start_time'] = start_time.timestamp()
-            # New TaskTimer object with task id
-            timer = TaskTimer.objects.create(task_id=task_id)
-            request.session['pk'] = timer.pk
-            return JsonResponse({'success': True})
-        elif action == 'stop':
-            # Get start_time from session
-            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
-            end_time = timezone.now()
-            duration = end_time - start_time
-            # Filter TaskTimer via pk to find the right one
-            timer = TaskTimer.objects.filter(pk=request.session.get('pk'))
-            timer.time_ended = end_time
-            timer.time_elapsed = duration
-            timer.save()
-            return JsonResponse({'success': True})
-    return render(request, 'timer.html')
