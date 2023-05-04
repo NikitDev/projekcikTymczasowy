@@ -5,19 +5,13 @@
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
 {% block content %}
-
-<html>
-
-<head>
-</head>
-
-<body class="container d-flex justify-content-center align-items-center">
+<div class="h-100 d-flex justify-content-center align-items-center">
     <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
+        <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded shadow-lg bg-white"
             style="--bs-bg-opacity: .3">
             <h1 class="fs-1 mb-4">{% trans "Sign Up" %}</h1>
             {% for field in form %}
@@ -31,13 +25,11 @@
                 {{ field.label_tag }}
             </div>
             {% endfor %}
-            <button class="btn btn-primary mb-3" type="submit">{% trans "Sign Up" %}</button>
+            <button class="btn mb-3 btn-primary" type="submit">{% trans "Sign Up" %}</button>
             <p>Posiadasz już konto?
-                <a href="{{ login_url }}">{% trans "Sign In" %}</a>.
+                <a class="text-black" href="{{ login_url }}">{% trans "Sign In" %}</a>
             </p>
         </div>
     </form>
-</body>
-
-</html>
+</div>
 {% endblock %}

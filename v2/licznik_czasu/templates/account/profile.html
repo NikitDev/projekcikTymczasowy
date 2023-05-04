@@ -5,20 +5,13 @@
 {% block head_title %}Profil{% endblock %}
 
 {% block content %}
-
-<html>
-
-<head>
-
-</head>
-
-<body class="container d-flex justify-content-center align-items-center">
+<div class="h-100 d-flex justify-content-center align-items-center">
     <form method="post" action="{% url 'view_profile' %}">
         {% csrf_token %}
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="container shadow-lg h-auto w-auto d-inline-flex flex-column justify-content-center align-items-center rounded bg-secondary p-5"
+        <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded shadow-lg bg-white"
             style="--bs-bg-opacity: .3;">
             <h1 class="fs-1 mb-4">Podgląd profilu</h1>
             {% for field in form %}
@@ -28,12 +21,10 @@
             </div>
             {% endfor %}
             <div class="buttons">
-                <button class="btn btn-primary mb-3" type="submit">Zapisz informacje</button>
-                <a class="btn btn-primary mb-3" href="{% url 'account_change_password' %}">Zmień hasło</a>
+                <button class="btn mb-3 btn-primary " type="submit">Zapisz informacje</button>
+                <a class="btn mb-3 btn-primary " href="{% url 'account_change_password' %}">Zmień hasło</a>
             </div>
         </div>
     </form>
-</body>
-
-</html>
+</div>
 {% endblock %}
