@@ -30,7 +30,7 @@
                     <label for="project-description">Opis projektu</label>
                 </div>
             </div>
-            <div class="container rounded bg-white w-50 m-4">
+            <div class="container rounded bg-white w-50 m-4" style="height: fit-content;">
                 <table class="table table-striped table-hover bg-white">
                     <thead>
                         <tr>
@@ -91,14 +91,14 @@
         </div>
         <div class="container mt-5">
             <section>
-                <div class="row d-flex justify-content-center gap-3">
+                <div class="row row-cols-auto d-flex justify-content-center gap-4">
                     {% for task in tasks %}
-                    <a type="button" class="flex-grow-1 shadow text-decoration-none rounded" href="{% url 'view_task' project.id task.id %}" style="background-color: #000080; max-width: 30%; color: #e7e5e4">
-                        <p class="text-truncate fs-4 fw-bold">
+                    <a type="button" class="shadow text-decoration-none rounded" href="{% url 'view_task' project.id task.id %}" style="background-color: #0b5394; color: #e7e5e4;">
+                        <p class="text-nowrap overflow-hidden text-truncate fs-4 fw-bold" style="width: 20rem;">
                             {{ task.task_name }}
                         </p>
-                        <p>
-                            Pracownik: {{ task.description }}
+                        <p class="text-nowrap overflow-hidden text-truncate" style="width: 20rem;">
+                            Opis: {{ task.description }}
                         </p>
                     </a>
                     {% endfor %}

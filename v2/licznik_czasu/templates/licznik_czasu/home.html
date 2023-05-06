@@ -11,17 +11,17 @@
             <h1>Projekty użytkownika</h1>
         </div>
         <section>
-            <div class="d-flex row justify-content-center gap-3 pt-4 pb-4">
+            <div class="d-flex row row-cols-auto justify-content-center gap-5 pt-5 pb-5">
                 {% for project in projects %}
-                <a type="button" class="flex-grow-1 text-decoration-none rounded shadow" href="{% url 'view_project' project.id %}"
-                    style="background-color: #0b5394; max-width: 30%; color: #e7e5e4">
-                    <p class="fs-4 fw-bold text-truncate">
+                <a type="button" class="text-decoration-none rounded shadow" href="{% url 'view_project' project.id %}"
+                    style="min-width: 30%; background-color: #0b5394; color: #e7e5e4">
+                    <p class="fs-4 fw-bold text-truncate text-nowrap overflow-hidden" style="width: 20rem;">
                         {{ project.project_name }}
                     </p>
                     <p>
                         Klient: {{ project.client_id }}
                     </p>
-                    <p class="text-truncate">
+                    <p class="text-nowrap overflow-hidden text-truncate" style="width: 20rem;">
                         Opis Projektu:  {{ project.description }}
                     </p>
                 </a>
