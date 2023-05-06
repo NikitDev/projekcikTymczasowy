@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Project, Client, Employee, Task, TaskTimer
+
+from .models import Project, Task, TaskTimer
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
@@ -28,16 +29,19 @@ def view_profile(request):
     return render(request, 'account/profile.html', context)
 
 
-@login_required()
+@login_required
 def view_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task_name = form.cleaned_data['task_name']
-            description = form.cleaned_data['description']
+            task_name = request.POST.get('task_name')
+            description = request.POST.get('description')
+            project_id = request.POST.get('project_id')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
-            return redirect('view_project', project_id)
+            return JsonResponse({"message": "Task added successfully"})
+        else:
+            return JsonResponse({"message": "Form not valid"})
     else:
         form = TaskForm()
 
@@ -49,7 +53,7 @@ def view_project(request, project_id):
     return render(request, "licznik_czasu/view_project.html", context)
 
 
-@login_required()
+@login_required
 def create_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -67,7 +71,7 @@ def create_project(request):
     return render(request, "licznik_czasu/create_project.html", context)
 
 
-@login_required()
+@login_required
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
@@ -75,6 +79,8 @@ def view_task(request, project_id, task_id):
         queryset=project.employee, widget=forms.CheckboxSelectMultiple())
     if request.method == 'POST':
         action = request.POST.get('action')
+        form = TaskForm(request.POST, instance=task)
+        form2 = TaskEmployeeForm(request.POST, instance=task)
         if action == 'start':
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
@@ -92,14 +98,19 @@ def view_task(request, project_id, task_id):
             timer.save()
             request.session['start_time'] = None
             return JsonResponse({'success': True})
-
-        else:
-            form = TaskForm(request.POST, instance=task)
-            form2 = TaskEmployeeForm(request.POST, instance=task)
-            if all([form.is_valid(), form2.is_valid()]):
+        # Handle forms
+        elif action == "task-info-form":
+            if form.is_valid():
                 form.save()
+                return JsonResponse({"message": "Task changed successfully"})
+            else:
+                return JsonResponse({"message": "Task change unsuccessfull"})
+        elif action == "employee-form":
+            if form2.is_valid():
                 form2.save()
-                return redirect('view_task', project_id, task_id)
+                return JsonResponse({"message": "Employee/s added successfully"})
+            else:
+                return JsonResponse({"message": "Employee form not valid"})
     else:
         form = TaskForm(instance=task)
         form2 = TaskEmployeeForm(instance=task)

@@ -2,10 +2,12 @@
 
 {% block head_title %}Projekt: {{ project.project_name }}{% endblock %}
 
+{% block extra_head %}
+{% endblock %}
+
 {% block content %}
 
-<form method="POST">
-    {% csrf_token %}
+<div>
     <div class="container h-auto w-100 mb-3 p-5 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
         <div class="d-flex justify-content-between mb-4">
             <h1 class="fs-1">Projekt id: {{ project.id }}</h1>
@@ -65,33 +67,36 @@
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Dodaj zadanie</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {% for field in form %}
-                            {% if field.errors %}
-                            <div>
-                                {{ field.errors }}
-                            </div>
-                            {% endif %}
-                            <div class="form-floating mb-3">
-                                {{ field }}
-                                {{ field.label_tag }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                        <button type="submit" class="btn btn-primary">Zapisz</button>
-                    </div>
+                    <form id="task-form" method="POST">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Dodaj zadanie</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in form %}
+                                {% if field.errors %}
+                                <div>
+                                    {{ field.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-floating mb-3">
+                                    {{ field }}
+                                    {{ field.label_tag }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                            <button type="submit" class="btn btn-primary">Zapisz</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
         <div class="container mt-5">
             <section>
-                <div class="row row-cols-auto d-flex justify-content-center gap-4">
+                <div id="task-grid" class="row row-cols-auto d-flex justify-content-center gap-4">
                     {% for task in tasks %}
                     <a type="button" class="shadow text-decoration-none rounded" href="{% url 'view_task' project.id task.id %}" style="background-color: #0b5394; color: #e7e5e4;">
                         <p class="text-nowrap overflow-hidden text-truncate fs-4 fw-bold" style="width: 20rem;">
@@ -106,5 +111,30 @@
             </section>
         </div>
     </div>
-</form>
+</div>
+
+<script>
+    $(document).on("submit", "#task-form", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: {
+                task_name: $("#id_task_name").val(),
+                description: $("#id_description").val(),
+                project_id: "{{ project.id }}",
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response){
+                $("#id_task_name").val("");
+                $("#id_description").val("");
+                $("#task-grid").load(location.href + " #task-grid>*", "");
+                console.log(response.message);
+            },
+            error: function(response){
+                console.log(response.message);
+            }
+        });
+    });
+</script>
 {% endblock %}
