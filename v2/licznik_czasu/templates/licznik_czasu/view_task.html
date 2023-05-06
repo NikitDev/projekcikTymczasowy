@@ -40,8 +40,15 @@
                     <label for="task-creation-date">Data utworzenia</label>
                 </div>
                 <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>
+                <div class="d-flex justify-content-center">
+                    <h1>Rozpocznij sesje</h1>
+                </div>
+                <div class="d-flex mb-3 rounded shadow-lg bg-white">
+                    <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>
+                    <button class="w-50 btn btn-primary" type="button" id="timer_button" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"></button>
+                 </div>
             </div>
-            <div class="container w-50 m-4 rounded bg-white">
+            <div class="container w-50 m-4 rounded bg-white" style="height: fit-content;">
                 <table class="table table-striped table-hover bg-white">
                     <thead>
                         <tr>
@@ -86,10 +93,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div>
-            <h1 id="timer-display">00:00:00</h1>
-            <button class="btn btn-primary mb-3" type="button" id="timer_button"></button>
         </div>
     </div>
 </form>
