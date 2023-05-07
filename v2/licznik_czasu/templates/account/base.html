@@ -16,7 +16,7 @@
 
 <body style="padding-top: 100px; background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%);">
     {% block body %}
-    <nav class="navbar navbar-expand fixed-top bg-body-tertiary" style="height: 80px;">
+    <nav class="navbar navbar-expand-sm fixed-top bg-body-tertiary">
         <div class="container-fluid">
             <a class="pb-2 navbar-brand">Licznik czasu</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
@@ -36,7 +36,7 @@
                         {% endif %}
                     {% endif %}
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav" style="height: 65px;">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle rounded" role="button" data-bs-toggle="dropdown"

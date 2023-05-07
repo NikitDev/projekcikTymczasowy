@@ -12,7 +12,7 @@ def home(request):
     if request.user.is_anonymous:
         projects = []
     elif request.user.is_superuser:
-        projects = Project.objects.all()
+        projects = Project.objects.all().order_by("id")
     elif request.user.who_is == "CL":
         client_id = Client.objects.get(user_id=request.user.id).id
         projects = Project.objects.filter(client=client_id).order_by('id')
