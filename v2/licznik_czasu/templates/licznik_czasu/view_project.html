@@ -1,8 +1,11 @@
 {% extends "account/base.html" %}
 
 {% block head_title %}Projekt: {{ project.project_name }}{% endblock %}
+{% load static %}
 
 {% block extra_head %}
+<script type="text/javascript">var projectId = "{{ project.id }}"; var csrfToken = "{{ csrf_token }}"</script>
+<script src="{% static 'view-project.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -112,29 +115,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).on("submit", "#task-form", function(e){
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "",
-            data: {
-                task_name: $("#id_task_name").val(),
-                description: $("#id_description").val(),
-                project_id: "{{ project.id }}",
-                csrfmiddlewaretoken: "{{ csrf_token }}"
-            },
-            success: function(response){
-                $("#id_task_name").val("");
-                $("#id_description").val("");
-                $("#task-grid").load(location.href + " #task-grid>*", "");
-                console.log(response.message);
-            },
-            error: function(response){
-                console.log(response.message);
-            }
-        });
-    });
-</script>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from .models import Project, Task, TaskTimer
+from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
@@ -9,7 +9,16 @@ from django.http import JsonResponse
 
 
 def home(request):
-    projects = Project.objects.all().order_by('id')
+    if request.user.is_anonymous:
+        projects = []
+    elif request.user.is_superuser:
+        projects = Project.objects.all()
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id).id
+        projects = Project.objects.filter(client=client_id).order_by('id')
+    else:
+        employee_id = Employee.objects.get(user_id=request.user.id).id
+        projects = Project.objects.filter(employee=employee_id).order_by('id')
     context = {'projects': projects}
     return render(request, 'licznik_czasu/home.html', context)
 
@@ -76,7 +85,7 @@ def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
-        queryset=project.employee, widget=forms.CheckboxSelectMultiple())
+        queryset=project.employee, widget=forms.CheckboxSelectMultiple(), required=False)
     if request.method == 'POST':
         action = request.POST.get('action')
         form = TaskForm(request.POST, instance=task)
