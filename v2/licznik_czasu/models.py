@@ -13,7 +13,7 @@ class Client(models.Model):
     phone_number = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):
-        return f'name: {self.user.first_name} {self.user.last_name}, id: {self.id}'
+        return f'Client: {self.user.username}, id: {self.id}'
 
 
 class Employee(models.Model):
@@ -21,7 +21,7 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):
-        return f'name: {self.user.first_name} {self.user.last_name}, id: {self.id}'
+        return f'Employee: {self.user.username}, id: {self.id}'
 
 
 class Project(models.Model):
@@ -40,6 +40,9 @@ class Task(models.Model):
     creation_date = models.DateField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
     employee = models.ManyToManyField(Employee, blank=True)
+
+    def __str__(self):
+        return f'Task name: {self.task_name}'
 
 
 class TaskTimer(models.Model):

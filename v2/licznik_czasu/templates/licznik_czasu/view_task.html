@@ -3,6 +3,14 @@
 {% block head_title %}Task: {{ task.task_name }}{% endblock %}
 
 {% block content %}
+{% load static %}
+
+<head>
+    <script type="text/javascript">var value = "{{ current }}";var session_id = "{{ session_id }}";var task_id = "{{ task_id }}"</script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'timer.js' %}"></script>
+</head>
+
 <form method="POST">
     {% csrf_token %}
     <div class="container h-auto w-100 p-5 mb-3 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
@@ -78,6 +86,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div>
+            <h1 id="timer-display"></h1>
+            <button class="btn btn-primary mb-3" type="button" id="timer_button"></button>
         </div>
     </div>
 </form>
