@@ -6,7 +6,7 @@
 {% load static %}
 
 <head>
-    <script type="text/javascript">var value = "{{ current }}"</script>
+    <script type="text/javascript">var value = "{{ current }}";var session_id = "{{ session_id }}";var task_id = "{{ task_id }}"</script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'timer.js' %}"></script>
 </head>
@@ -88,7 +88,7 @@
             </div>
         </div>
         <div>
-            <h1 id="timer-display">00:00:00</h1>
+            <h1 id="timer-display"></h1>
             <button class="btn btn-primary mb-3" type="button" id="timer_button"></button>
         </div>
     </div>
