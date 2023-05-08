@@ -48,8 +48,7 @@ def view_project(request, project_id):
             description = request.POST.get('description')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
             return JsonResponse({"message": "Task added successfully"})
-        else:
-            return JsonResponse({"message": "Form not valid"})
+        return JsonResponse({"message": "Form not valid"})
     else:
         form = TaskForm()
 
@@ -111,14 +110,12 @@ def view_task(request, project_id, task_id):
             if form.is_valid():
                 form.save()
                 return JsonResponse({"message": "Task changed successfully"})
-            else:
-                return JsonResponse({"message": "Task change unsuccessfull"})
+            return JsonResponse({"message": "Task change unsuccessfull"})
         elif action == "employee-form":
             if form2.is_valid():
                 form2.save()
                 return JsonResponse({"message": "Employee/s added successfully"})
-            else:
-                return JsonResponse({"message": "Employee form not valid"})
+            return JsonResponse({"message": "Employee form not valid"})
     else:
         form = TaskForm(instance=task)
         form2 = TaskEmployeeForm(instance=task)
