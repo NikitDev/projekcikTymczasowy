@@ -46,7 +46,6 @@ def view_project(request, project_id):
         if form.is_valid():
             task_name = request.POST.get('task_name')
             description = request.POST.get('description')
-            project_id = request.POST.get('project_id')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
             return JsonResponse({"message": "Task added successfully"})
         else:
@@ -57,7 +56,7 @@ def view_project(request, project_id):
     context = {
         "project": project,
         "form": form,
-        "tasks": Task.objects.filter(project_id=project_id)
+        "tasks": Task.objects.filter(project_id=project_id).order_by('id')
     }
     return render(request, "licznik_czasu/view_project.html", context)
 

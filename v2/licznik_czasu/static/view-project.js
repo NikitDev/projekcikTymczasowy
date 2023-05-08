@@ -6,7 +6,6 @@ $(document).on("submit", "#task-form", function(e){
         data: {
             task_name: $("#id_task_name").val(),
             description: $("#id_description").val(),
-            project_id: projectId,
             csrfmiddlewaretoken: csrfToken
         },
         success: function(response){

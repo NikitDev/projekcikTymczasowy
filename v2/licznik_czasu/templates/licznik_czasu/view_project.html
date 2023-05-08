@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block extra_head %}
-<script type="text/javascript">var projectId = "{{ project.id }}"; var csrfToken = "{{ csrf_token }}"</script>
+<script type="text/javascript">var csrfToken = "{{ csrf_token }}"</script>
 <script src="{% static 'view-project.js' %}"></script>
 {% endblock %}
 
