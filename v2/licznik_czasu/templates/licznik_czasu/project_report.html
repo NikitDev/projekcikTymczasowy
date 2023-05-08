@@ -1,50 +1,49 @@
 {% extends 'account/base.html' %}
 
 {% block content %}
-<h1>Raportowanie projektów</h1>
-
-
-<form method="post" action="{% url 'project_report' %}">
-  {% csrf_token %}
-  <label for="project">Wybierz projekt:</label>
-  <select name="project" id="project">
-    {% for project in projects %}
-    <option value="{{ project.id }}">{{ project.project_name }}</option>
-    {% endfor %}
-  </select>
-  <br><br>
-  <label for="time_filter">Filter by time:</label>
-  <select name="time_filter" id="time_filter">
-    {% for key, value in time_filters.items %}
-    <option value="{{ key }}">{{ key }} ({{ value|date:"Y-m-d" }})</option>
-    {% endfor %}
-  </select>
-  <br><br>
-  <input type="submit" name="generate_report" value="Generuj Raport">
-  <button type="submit">Wyświetl wyniki</button>
-</form>
-
-
-<h2>Zadania dla projektu "{{ project.project_name }}"</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Nazwa zadania</th>
-      <th>Data rozpoczęcia</th>
-      <th>Czas pracy nad zadaniem</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for task in tasktimer %}
-    <tr>
-      <td>{{ task.name }}</td>
-      <td>{{ task.time_started }}</td>
-      <td>{{ task.time_elapsed }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-
-
+    {% if request.user.who_is != 'CL' %}
+        <p>Nie masz dostepu do tej strony.</p>
+    {% else %}
+        <h1>Raport projektu "{{ project.project_name }}"</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="time_filter">Filtr czasu:</label>
+            <select name="time_filter" id="time_filter">
+                {% for name, date in time_filters.items %}
+                    <option value="{{ name }}">{{ name }} - od {{ date|date:"d/m/Y" }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Wyświetl wyniki</button>
+            <button type="submit" name="generate_report" value="true">Generuj raport PDF</button>
+        </form>
+        {% if tasks %}
+            <h2>Zadania:</h2>
+            <ul>
+                {% for task in tasks %}
+                    <li>{{ task.task_name }}</li>
+                {% endfor %}
+            </ul>
+            {% if tasktimer %}
+                <h2>Czasy pracy:</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Zadanie</th>
+                            <th>Czas rozpoczęcia</th>
+                            <th>Czas trwania</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasktimer %}
+                            <tr>
+                                <td>{{ task.name }}</td>
+                                <td>{{ task.time_started|date:"d/m/Y H:i:s" }}</td>
+                                <td>{{ task.time_elapsed }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endif %}
+    {% endif %}
 {% endblock %}
