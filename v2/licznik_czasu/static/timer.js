@@ -2,17 +2,25 @@ $(document).ready(function() {
     var timerInterval, start_time, flag;
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
 
-
     if (value == 'None') {
         flag = true;
         $("#timer_button").text("START");
+        $("#timer-display").text("00:00:00");
     }
     else {
-        start_time = new Date(parseInt(value)*1000).getTime();
-        timer1();
-        timerInterval = setInterval(timer1, 1000);
-        flag = false;
-        $("#timer_button").text("STOP");
+        if (session_id == task_id) {
+            start_time = new Date(parseInt(value)*1000).getTime();
+            timer1();
+            timerInterval = setInterval(timer1, 1000);
+            flag = false;
+            $("#timer_button").text("STOP");
+        }
+        else {
+            flag = true;
+            $("#timer_button").text("START");
+            $("#timer_button").attr("disabled", true);
+            $("#timer-display").text("Inny licznik już pracuje: " + session_id);
+        }
     };
 
     function timer1() {

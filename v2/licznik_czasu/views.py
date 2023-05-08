@@ -91,6 +91,7 @@ def view_task(request, project_id, task_id):
         if action == 'start':
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
+            request.session['task_id'] = task_id
             timer = TaskTimer.objects.create(task_id=task_id)
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
@@ -125,6 +126,8 @@ def view_task(request, project_id, task_id):
         "form2": form2,
         "task": task,
         "project_id": project_id,
+        "session_id": request.session.get('task_id'),
+        "task_id": task_id,
         'current': request.session.get('start_time')
     }
     return render(request, "licznik_czasu/view_task.html", context)

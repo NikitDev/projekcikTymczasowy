@@ -93,14 +93,13 @@
             {% csrf_token %}
             <div class="col-lg-6 col-md-12 justify-content-center">
                 <div class="d-flex justify-content-center">
-                <h1>Rozpocznij sesje</h1>
+                    <h1>Rozpocznij sesje</h1>
+                </div>
+                <div class="d-flex mb-3 rounded shadow-lg bg-white">
+                    <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>
+                    <button class="w-50 btn btn-primary" type="button" id="timer_button" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"></button>
+                </div>
             </div>
-            <div class="d-flex mb-3 rounded shadow-lg bg-white">
-                <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>
-                <button class="w-50 btn btn-primary" type="button" id="timer_button" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"></button>
-            </div>
-            </div>
-            
         </form>
     </div>
 </div>
