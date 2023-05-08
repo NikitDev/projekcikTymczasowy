@@ -61,7 +61,7 @@ def create_project(request):
 
 def project_report(request):
     if request.user.who_is != 'CL':
-        return HttpResponse('You are not authorized to access this page.')
+        return HttpResponse('Nie masz dostepu do tej strony.')
 
     projects = Project.objects.filter(client__user=request.user)
 
