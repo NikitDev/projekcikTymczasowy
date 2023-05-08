@@ -34,6 +34,10 @@
                     <output class="form-control" name="project-description" id="project-description" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
                     <label for="project-description">Opis projektu</label>
                 </div>
+                <br>
+                <div>
+                    <a class="btn btn-primary mb-3 justify-content-center w-100" href="{% url 'project_report' project.id %}">Raport</a>
+                </div>
             </div>
             <div class="container col-lg-6 col-md-12 bg-white rounded overflow-hidden" style="height: fit-content;">
                 <table class="table table-striped table-hover bg-white">

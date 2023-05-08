@@ -176,6 +176,7 @@ def project_report(request, project_id):
                         taskinfo = {
                             'name': time.task.task_name,
                             'time_started': time.time_started,
+                            'time_ended': time.time_ended,
                             'time_elapsed': time.time_elapsed
                         }
                         tasktimers.append(taskinfo)
