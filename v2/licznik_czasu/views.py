@@ -140,6 +140,7 @@ def view_task(request, project_id, task_id):
     return render(request, "licznik_czasu/view_task.html", context)
 
 
+@login_required
 def project_report(request, project_id):
     if request.user.who_is != 'CL':
         return HttpResponse('Nie masz dostepu do tej strony.')
@@ -158,16 +159,20 @@ def project_report(request, project_id):
 
     context = {
         'project': project,
-        'time_filters': time_filters,
+        'time_filters': time_filters
     }
 
     if request.method == 'POST':
         selected_time_filter = request.POST.get('time_filter', None)
         generate_report = request.POST.get('generate_report', None)
-
+        task_filter = request.POST.get('task_filter', None)
         if selected_time_filter is not None:
             selected_time_filter_date = time_filters[selected_time_filter]
-            tasks = Task.objects.filter(project=project_id)
+            tasks_list = Task.objects.filter(project=project_id)
+            if task_filter is not None:
+                tasks = Task.objects.filter(project=project_id, task_name=task_filter)
+            else:
+                tasks = Task.objects.filter(project=project_id)
             tasktimers = []
             for task in tasks:
                 task_time = list(TaskTimer.objects.filter(task=task))
@@ -188,10 +193,12 @@ def project_report(request, project_id):
                 'time_filters': time_filters,
                 'project': project,
                 'tasks': tasks,
+                'tasks_list': tasks_list,
                 'tasktimer': tasktimers,
-                'time_filter': selected_time_filter
+                'time_filter': selected_time_filter,
+                'selected_time_filter_date': selected_time_filter_date
             }
-
+            
         if generate_report is not None:
             template_path = 'licznik_czasu/pdf_template.html'
             response = HttpResponse(content_type='application/pdf')
