@@ -27,7 +27,7 @@ class Employee(models.Model):
 class Project(models.Model):
     project_name = models.TextField(max_length=128)
     description = models.TextField(null=True, blank=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     employee = models.ManyToManyField(Employee, blank=True)
 
     def __str__(self):
