@@ -1,30 +1,39 @@
 from django.contrib import admin
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.hashers import make_password
 from .models import Client, Project, Employee, Task, TaskTimer, User
 
 
-class CustomUserCreationForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = UserCreationForm.Meta.fields + ('password', 'first_name', 'last_name', 'who_is',)
-
-
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'who_is')
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'who_is', 'is_staff'),
+        }),
+    )
 
-    def save_model(self, request, obj, form, change):
-        password = make_password(form.cleaned_data.get("password"), hasher="pbkdf2_sha256")
-        print(password)
-        obj.password = password
-        obj.save()
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('project_name', 'description', 'client')
 
 
-# Register your models here.
-admin.site.register(Client)
-admin.site.register(Project)
-admin.site.register(Employee)
-admin.site.register(Task)
-admin.site.register(TaskTimer)
-admin.site.register(User, CustomUserAdmin)
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('user', 'company_name', 'phone_number')
+
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'phone_number')
+
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('task_name', 'description', 'creation_date', 'project')
+
+
+@admin.register(TaskTimer)
+class TaskTimerAdmin(admin.ModelAdmin):
+    list_display = ('time_started', 'time_ended', 'time_elapsed', 'task')

@@ -31,7 +31,7 @@ class Project(models.Model):
     employee = models.ManyToManyField(Employee, blank=True)
 
     def __str__(self):
-        return f'project_name: {self.project_name}, id: {self.id}'
+        return self.project_name
 
 
 class Task(models.Model):
@@ -42,7 +42,7 @@ class Task(models.Model):
     employee = models.ManyToManyField(Employee, blank=True)
 
     def __str__(self):
-        return f'Task name: {self.task_name}'
+        return self.task_name
 
 
 class TaskTimer(models.Model):
