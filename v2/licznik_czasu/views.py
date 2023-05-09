@@ -7,6 +7,11 @@ from django import forms
 from django.utils import timezone
 from django.http import JsonResponse
 
+import schedule
+import threading
+import json
+import time
+
 
 def home(request):
     if request.user.is_anonymous:
@@ -78,12 +83,53 @@ def create_project(request):
     return render(request, "licznik_czasu/create_project.html", context)
 
 
+class SchedulerThread(threading.Thread):
+    def __init__(self, start_time_a, timer_id):
+        super().__init__()
+        self.start_time_a = start_time_a
+        self.timer_id = timer_id
+        self.stop_scheduler = threading.Event()
+
+    def run(self):
+        while not self.stop_scheduler.is_set():
+            schedule.run_pending()
+            time.sleep(1)
+            print("TEST")
+
+    def stop(self):
+        print("Stopped")
+        self.stop_scheduler.set()
+
+
+class StopThread:
+    def __init__(self, schedule_job, thread):
+        self.schedule_job = schedule_job
+        self.thread = thread
+
+    def stop(self):
+        schedule.cancel_job(self.schedule_job)
+        self.thread.stop()
+        self.thread.join()
+
+
+def autosave(request, start_time_a, timer_id):
+    timer_a = TaskTimer.objects.get(pk=timer_id, user=request.user)
+    print(timer_id, " timer id XD")
+    if timer_a:
+        now = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
+        time_el = now - timezone.datetime.fromtimestamp(float(start_time_a))
+        timer_a.time_elapsed = time_el
+        timer_a.time_ended = now
+        timer_a.save()
+
+
 @login_required
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
         queryset=project.employee, widget=forms.CheckboxSelectMultiple(), required=False)
+
     if request.method == 'POST':
         action = request.POST.get('action')
         form = TaskForm(request.POST, instance=task)
@@ -92,19 +138,40 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id)
+            timer = TaskTimer.objects.create(task_id=task_id, user=request.user)
             request.session['pk'] = timer.pk
+
+            schedule.every(5).seconds.do(autosave, request, request.session.get('start_time'), request.session.get('pk')).tag(request.session.get('pk'))
+
+            scheduler_thread = SchedulerThread(request.session.get('start_time'), request.session.get('pk'))
+            scheduler_thread.start()
+
+            timer.schedule_thread = scheduler_thread.name
+            timer.save()
+
             return JsonResponse({'success': True})
         elif action == 'stop':
+            timer_s = TaskTimer.objects.get(pk=request.session.get('pk'), user=request.user)
+            scheduler_thread = timer_s.schedule_thread
+            if scheduler_thread is not None:
+                for thread in threading.enumerate():
+                    if thread.getName() == scheduler_thread:
+                        job = schedule.get_jobs(request.session.get('pk'))[0]
+                        thr = StopThread(job, thread)
+                        thr.stop()
+                        break
+
             start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
             end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
             duration = end_time - start_time
             # Filter TaskTimer via pk to find the right one
             timer = TaskTimer.objects.get(pk=request.session.get('pk'))
+            print(request.session.get('pk'), ' To tez timer ID XDDDDDDDDD')
             timer.time_ended = end_time
             timer.time_elapsed = duration
             timer.save()
             request.session['start_time'] = None
+            request.session['pk'] = None
             return JsonResponse({'success': True})
         # Handle forms
         elif action == "task-info-form":

@@ -49,4 +49,6 @@ class TaskTimer(models.Model):
     time_started = models.DateTimeField(auto_now_add=True)
     time_ended = models.DateTimeField(null=True, blank=True)
     time_elapsed = models.DurationField(null=True, blank=True)
+    schedule_thread = models.TextField(null=True, blank=True, default=None)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, default='')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default='')

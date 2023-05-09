@@ -1,6 +1,9 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from .models import Client, User, Employee
+from django.contrib.auth.signals import user_logged_out
+from .models import Client, User, Employee, TaskTimer
+from django.utils import timezone
+from .views import StopThread
 
 
 @receiver(post_save, sender=User)

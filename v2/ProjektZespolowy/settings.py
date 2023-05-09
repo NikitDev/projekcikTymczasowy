@@ -57,6 +57,8 @@ AUTH_USER_MODEL = "licznik_czasu.User"
 # ACCOUNT_EMAIL_REQUIRED = True
 # ACCOUNT_EMAIL_UNIQUE = True
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
