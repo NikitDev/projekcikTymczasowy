@@ -1,16 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from .models import Project, Client, Employee, Task, TaskTimer
 
 from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
-from django.http import JsonResponse
-from .forms import UserForm, ProjectForm, TaskForm
+from django.http import JsonResponse, HttpResponse
 from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 
