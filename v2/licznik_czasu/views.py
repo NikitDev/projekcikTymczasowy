@@ -95,7 +95,7 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id)
+            timer = TaskTimer.objects.create(task_id=task_id, user=request.user)
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
         elif action == 'stop':
@@ -162,39 +162,55 @@ def project_report(request, project_id):
         selected_time_filter = request.POST.get('time_filter', None)
         generate_report = request.POST.get('generate_report', None)
         task_filter = request.POST.get('task_filter', None)
+
         if selected_time_filter is not None:
             selected_time_filter_date = time_filters[selected_time_filter]
-            tasks_list = Task.objects.filter(project=project_id)
-            if task_filter is not None:
-                tasks = Task.objects.filter(project=project_id, task_name=task_filter)
-            else:
-                tasks = Task.objects.filter(project=project_id)
+            tasks = Task.objects.filter(project=project_id)
+
             tasktimers = []
+            tasktotal = []
+
             for task in tasks:
                 task_time = list(TaskTimer.objects.filter(task=task))
+
+                total = timedelta(0) # łączny czas na każdego taska.
+                tasktimers2=[]
+
                 for time in task_time:
                     if time.time_started.date() >= selected_time_filter_date.date():
+                        if time.time_elapsed:
+                            total += time.time_elapsed
+
                         taskinfo = {
                             'name': time.task.task_name,
                             'time_started': time.time_started,
                             'time_ended': time.time_ended,
-                            'time_elapsed': time.time_elapsed
+                            'time_elapsed': time.time_elapsed,
+                            'employee': time.user
                         }
                         tasktimers.append(taskinfo)
+                        tasktimers2.append(taskinfo)
+
+                task3 = {
+                    'task': task,
+                    'total_elapsed': total,
+                    'all_timers':tasktimers2
+                }
+                tasktotal.append(task3)
         else:
             tasks = None
 
-        if tasks is not None:
+        if tasks:
             context = {
                 'time_filters': time_filters,
                 'project': project,
                 'tasks': tasks,
-                'tasks_list': tasks_list,
                 'tasktimer': tasktimers,
                 'time_filter': selected_time_filter,
-                'selected_time_filter_date': selected_time_filter_date
+                'selected_time_filter_date': selected_time_filter_date,
+                'tasktotal': tasktotal
             }
-            
+
         if generate_report is not None:
             template_path = 'licznik_czasu/pdf_template.html'
             response = HttpResponse(content_type='application/pdf')
