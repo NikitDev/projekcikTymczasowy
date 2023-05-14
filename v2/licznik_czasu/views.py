@@ -175,12 +175,13 @@ def project_report(request, project_id):
 
                 total = timedelta(0) # łączny czas na każdego taska.
                 tasktimers2=[]
+                start_dates=[]
+                end_dates=[]
 
                 for time in task_time:
                     if time.time_started.date() >= selected_time_filter_date.date():
                         if time.time_elapsed:
                             total += time.time_elapsed
-
                         taskinfo = {
                             'name': time.task.task_name,
                             'time_started': time.time_started,
@@ -190,10 +191,23 @@ def project_report(request, project_id):
                         }
                         tasktimers.append(taskinfo)
                         tasktimers2.append(taskinfo)
+                        start_dates.append(time.time_started)
+                        end_dates.append(time.time_ended)
+
+                if start_dates:
+                    start_date =  min(start_dates)
+                else:
+                    start_date = "-"
+                if end_dates:
+                    end_date =  max(end_dates)
+                else:
+                    end_date = "-"
 
                 task3 = {
                     'task': task,
                     'total_elapsed': total,
+                    'start': start_date,
+                    'end': end_date,
                     'all_timers':tasktimers2
                 }
                 tasktotal.append(task3)

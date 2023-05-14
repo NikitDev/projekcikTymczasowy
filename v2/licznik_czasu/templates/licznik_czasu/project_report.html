@@ -76,7 +76,8 @@
                                     <td><button type="submit" style="color: black; border: none; background: none;" name="task_filter" id="task_filter" value="{{ task.task_name }}">{{ task.task_name }}</button></td>
                                     
                                     {% if task.employee.all %}
-                                        <td>{% for employee in task.employee.all %}
+                                        <td>
+                                            {% for employee in task.employee.all %}
                                                 {{ employee.user.first_name }}
                                                 <br>
                                             {% endfor %}
@@ -105,8 +106,8 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Nazwa zadania</th>
-                                    <th scope="col">Data rozpoczęcia</th>
-                                    <th scope="col">Data zakończenia</th>
+                                    <th scope="col">Data rozpoczęcia pracy</th>
+                                    <th scope="col">Data zakończenia pracy</th>
                                     <th scope="col">Łączny czas pracy nad zadaniem</th>
                                 </tr>
                             </thead>
@@ -117,42 +118,45 @@
                                     <td><button class="bg-dark-subtle" style="border: none;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ forloop.counter }}" aria-expanded="false" aria-controls="{{ forloop.counter }}">
                                             {{ task.task.task_name }} 
                                         </button></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ task.total_elapsed|make_list|slice:":7"|join:"" }}</td>
+                                    <td>{{ task.start }}</td>
+                                    <td>{{ task.end }}</td>
+                                    {% if task.total_elapsed %}
+                                        <td>{{ task.total_elapsed|make_list|slice:":7"|join:"" }}</td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
                                 </tr>
-                                        <tr><td colspan="5" class="px-5">
-                                            <div class= "collapse" id="{{ forloop.counter }}">
-                                                <table class="table table-striped table-hover bg-primary-subtle" >
-                                                    {% if task.all_timers %}
-                                                        {% for task2 in task.all_timers %}
-                                                            {% if forloop.first %}
-                                                            <thead>
-                                                                <tr class="bg-primary">
-                                                                    <th scope="col">#</th>
-                                                                    <th scope="col">Pracownik</th>
-                                                                    <th scope="col">Data rozpoczęcia</th>
-                                                                    <th scope="col">Data zakończenia</th>
-                                                                    <th scope="col">Czas pracy nad zadaniem</th>
-                                                                </tr>
-                                                            </thead>    
-                                                            {% endif %}
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>{{ forloop.counter }}</td>                           
-                                                                    <td>{{ task2.employee }}</td>
-                                                                    <td>{{ task2.time_started }}</td>
-                                                                    <td>{{ task2.time_ended }}</td>
-                                                                    <td>{{ task2.time_elapsed|make_list|slice:":7"|join:"" }}</td>                           
-                                                                </tr>
-                                                            </tbody>                                                   
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        <p>Brak danych</p>
+                                <tr><td colspan="5" class="px-5">
+                                    <div class= "collapse" id="{{ forloop.counter }}">
+                                        <table class="table table-striped table-hover bg-primary-subtle" >
+                                            {% if task.all_timers %}
+                                                {% for task2 in task.all_timers %}
+                                                    {% if forloop.first %}
+                                                    <thead>
+                                                        <tr class="bg-primary">
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Pracownik</th>
+                                                            <th scope="col">Data rozpoczęcia</th>
+                                                            <th scope="col">Data zakończenia</th>
+                                                            <th scope="col">Czas pracy nad zadaniem</th>
+                                                        </tr>
+                                                    </thead>    
                                                     {% endif %}
-                                                </table>
-                                            </div>
-                                        </td></tr>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>                           
+                                                            <td>{{ task2.employee }}</td>
+                                                            <td>{{ task2.time_started }}</td>
+                                                            <td>{{ task2.time_ended }}</td>
+                                                            <td>{{ task2.time_elapsed|make_list|slice:":7"|join:"" }}</td>                                                                </tr>
+                                                    </tbody>                                                   
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>Brak danych</p>
+                                            {% endif %}
+                                        </table>
+                                    </div>
+                                </td></tr>
                                 {% endfor %}                                   
                             </tbody>
                         </table>
