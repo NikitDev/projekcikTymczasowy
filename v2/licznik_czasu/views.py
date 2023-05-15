@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.template.loader import get_template
 
 from .models import Project, Task, TaskTimer, Client, Employee
@@ -31,6 +32,7 @@ def view_profile(request):
         form = UserForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, "Pomyślnie zapisano zmiany")
             return redirect('view_profile')
     else:
         form = UserForm(instance=request.user)
@@ -50,7 +52,9 @@ def view_project(request, project_id):
             task_name = request.POST.get('task_name')
             description = request.POST.get('description')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
+            messages.success(request, "Pomyślnie dodano zadanie")
             return JsonResponse({"message": "Task added successfully"})
+        messages.warning(request, "Nie można było stworzyć nowego zadania")
         return JsonResponse({"message": "Form not valid"})
     else:
         form = TaskForm()
@@ -61,24 +65,6 @@ def view_project(request, project_id):
         "tasks": Task.objects.filter(project_id=project_id).order_by('id')
     }
     return render(request, "licznik_czasu/view_project.html", context)
-
-
-@login_required
-def create_project(request):
-    if request.method == 'POST':
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            project_name = form.cleaned_data['project_name']
-            project_description = form.cleaned_data['description']
-            project = Project.objects.create(project_name=project_name, description=project_description)
-            return redirect('home')
-    else:
-        form = ProjectForm()
-
-    context = {
-        'form': form
-    }
-    return render(request, "licznik_czasu/create_project.html", context)
 
 
 @login_required
@@ -113,7 +99,9 @@ def view_task(request, project_id, task_id):
         elif action == "task-info-form":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Pomyślnie zapisano zmiany")
                 return JsonResponse({"message": "Task changed successfully"})
+            messages.warning(request, "Nie można było zapisać zmian")
             return JsonResponse({"message": "Task change unsuccessfull"})
         elif action == "employee-form":
             if form2.is_valid():
@@ -134,6 +122,17 @@ def view_task(request, project_id, task_id):
         'current': request.session.get('start_time')
     }
     return render(request, "licznik_czasu/view_task.html", context)
+
+
+def delete_task(request, task_id):
+    if request.method == "POST":
+        task = get_object_or_404(Task, pk=task_id)
+        project_id = task.project
+        messages.success(request, f"Usunięto zadanie: {task.task_name}")
+        task.delete()
+        return redirect("view_project", project_id=project_id)
+    messages.warning(request, "Brak dostępu do strony")
+    return redirect("home")
 
 
 @login_required

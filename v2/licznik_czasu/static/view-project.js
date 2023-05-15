@@ -12,10 +12,12 @@ $(document).on("submit", "#task-form", function(e){
             $("#id_task_name").val("");
             $("#id_description").val("");
             $("#task-grid").load(location.href + " #task-grid>*", "");
+            $("#messages").load(location.href + " #messages>*", "");
+            autoCloseAlerts();
             console.log(response.message);
         },
         error: function(response){
             console.log(response.message);
         }
     });
-});$
+});

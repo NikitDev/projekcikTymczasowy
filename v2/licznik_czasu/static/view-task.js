@@ -10,6 +10,8 @@ $(document).on("submit", "#task-info-form", function(e){
             csrfmiddlewaretoken: csrfToken
         },
         success: function(response){
+            $("#messages").load(location.href + " #messages>*", "");
+            autoCloseAlerts();
             console.log(response.message);
         },
         error: function(response){
