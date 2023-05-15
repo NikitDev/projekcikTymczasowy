@@ -127,7 +127,7 @@ def view_task(request, project_id, task_id):
 def delete_task(request, task_id):
     if request.method == "POST":
         task = get_object_or_404(Task, pk=task_id)
-        project_id = task.project
+        project_id = task.project.pk
         messages.success(request, f"Usunięto zadanie: {task.task_name}")
         task.delete()
         return redirect("view_project", project_id=project_id)
