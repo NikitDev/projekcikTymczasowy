@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
 
 from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from xhtml2pdf import pisa
+from datetime import datetime, timedelta
 
 
 def home(request):
@@ -131,3 +134,76 @@ def view_task(request, project_id, task_id):
         'current': request.session.get('start_time')
     }
     return render(request, "licznik_czasu/view_task.html", context)
+
+
+@login_required
+def project_report(request, project_id):
+    if request.user.who_is != 'CL':
+        return HttpResponse('Nie masz dostepu do tej strony.')
+
+    project = get_object_or_404(Project, pk=project_id)
+
+    last_day = datetime.now() - timedelta(days=1)
+    last_week = datetime.now() - timedelta(weeks=1)
+    last_month = datetime.now() - timedelta(weeks=4)
+
+    time_filters = {
+        'Last day': last_day,
+        'Last week': last_week,
+        'Last month': last_month
+    }
+
+    context = {
+        'project': project,
+        'time_filters': time_filters
+    }
+
+    if request.method == 'POST':
+        selected_time_filter = request.POST.get('time_filter', None)
+        generate_report = request.POST.get('generate_report', None)
+        task_filter = request.POST.get('task_filter', None)
+        if selected_time_filter is not None:
+            selected_time_filter_date = time_filters[selected_time_filter]
+            tasks_list = Task.objects.filter(project=project_id)
+            if task_filter is not None:
+                tasks = Task.objects.filter(project=project_id, task_name=task_filter)
+            else:
+                tasks = Task.objects.filter(project=project_id)
+            tasktimers = []
+            for task in tasks:
+                task_time = list(TaskTimer.objects.filter(task=task))
+                for time in task_time:
+                    if time.time_started.date() >= selected_time_filter_date.date():
+                        taskinfo = {
+                            'name': time.task.task_name,
+                            'time_started': time.time_started,
+                            'time_ended': time.time_ended,
+                            'time_elapsed': time.time_elapsed
+                        }
+                        tasktimers.append(taskinfo)
+        else:
+            tasks = None
+
+        if tasks is not None:
+            context = {
+                'time_filters': time_filters,
+                'project': project,
+                'tasks': tasks,
+                'tasks_list': tasks_list,
+                'tasktimer': tasktimers,
+                'time_filter': selected_time_filter,
+                'selected_time_filter_date': selected_time_filter_date
+            }
+            
+        if generate_report is not None:
+            template_path = 'licznik_czasu/pdf_template.html'
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="project_report.pdf"'
+            template = get_template(template_path)
+            html = template.render(context)
+            pisa_status = pisa.CreatePDF(html, dest=response)
+            if pisa_status.err:
+                return HttpResponse('error')
+            return response
+
+    return render(request, 'licznik_czasu/project_report.html', context)
