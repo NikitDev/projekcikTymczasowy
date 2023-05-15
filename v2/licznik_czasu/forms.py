@@ -1,5 +1,7 @@
 from django import forms
 from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm
+from django.contrib.auth.forms import UserChangeForm
+
 from .models import User, Project, Task, Employee
 
 
@@ -86,3 +88,8 @@ class TaskEmployeeForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['employee']
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = User
