@@ -12,6 +12,23 @@ from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 
 
+def can_access_project(request, project_id):
+    if request.user.is_superuser:
+        return
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id)
+        project = get_object_or_404(Project, pk=project_id)
+        if project.client == client_id:
+            return
+    else:
+        employee = Employee.objects.get(user_id=request.user.id)
+        project = get_object_or_404(Project, pk=project_id)
+        if employee in project.employee.all():
+            return
+    messages.warning(request, "Nie masz dostępu do tego projektu")
+    return redirect('home')
+
+
 def home(request):
     if request.user.is_anonymous:
         projects = []
@@ -45,6 +62,9 @@ def view_profile(request):
 
 @login_required
 def view_project(request, project_id):
+    check_permissions = can_access_project(request, project_id)
+    if check_permissions:
+        return check_permissions
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -69,6 +89,9 @@ def view_project(request, project_id):
 
 @login_required
 def view_task(request, project_id, task_id):
+    check_permissions = can_access_project(request, project_id)
+    if check_permissions:
+        return check_permissions
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
@@ -193,7 +216,7 @@ def project_report(request, project_id):
                 'time_filter': selected_time_filter,
                 'selected_time_filter_date': selected_time_filter_date
             }
-            
+
         if generate_report is not None:
             template_path = 'licznik_czasu/pdf_template.html'
             response = HttpResponse(content_type='application/pdf')

@@ -1,7 +1,7 @@
 function autoCloseAlerts(){
     setTimeout(function(){
         $(".alert").alert("close");
-    }, 6000);
+    }, 5000);
 }
 
 $(document).ready(function(){
