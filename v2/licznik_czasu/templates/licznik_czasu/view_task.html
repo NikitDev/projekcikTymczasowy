@@ -90,9 +90,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% if user.is_superuser or user.who_is == "EM" %}
                 <button type="button" class="btn btn-primary mb-3 w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">
                     Dodaj pracowników
                 </button>
+                {% endif %}
             </div>
 <!--            Modal add employee-->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
