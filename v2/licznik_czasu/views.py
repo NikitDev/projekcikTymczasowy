@@ -35,10 +35,10 @@ def home(request):
     elif request.user.is_superuser:
         projects = Project.objects.all().order_by("id")
     elif request.user.who_is == "CL":
-        client_id = Client.objects.get(user_id=request.user.id).id
+        client_id = Client.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(client=client_id).order_by('id')
     else:
-        employee_id = Employee.objects.get(user_id=request.user.id).id
+        employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
     context = {'projects': projects}
     return render(request, 'licznik_czasu/home.html', context)
