@@ -91,6 +91,7 @@ class Migration(migrations.Migration):
                 ('time_elapsed', models.DurationField(blank=True, null=True)),
                 ('task', models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to='licznik_czasu.task')),
                 ('user', models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+
             ],
         ),
     ]

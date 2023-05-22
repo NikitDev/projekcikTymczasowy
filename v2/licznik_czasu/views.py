@@ -200,7 +200,7 @@ def project_report(request, project_id):
                         'name': time.task.task_name,
                         'time_started': time.time_started,
                         'time_ended': time.time_ended,
-                        'time_elapsed': time.time_elapsed,
+                        'time_elapsed': str(time.time_elapsed).split(".")[0],
                         'employee': time.user
                     }
 
@@ -242,7 +242,7 @@ def project_report(request, project_id):
 
             task3 = { # informacje o konkretnym tasku, w celu wyświetlenia podsumowania
                 'task': task,
-                'total_elapsed': total2,
+                'total_elapsed': str(total2).split(".")[0],
                 'start': start_date,
                 'end': end_date,
                 'all_timers': tasktimers2
@@ -262,7 +262,7 @@ def project_report(request, project_id):
                 'task_filter': task_filter,
                 'employee_filter': employee_filter,
                 'flag': flag,
-                'tasktimers_totaltime': total
+                'tasktimers_totaltime': str(total).split(".")[0]
             }
 
         if generate_report is not None:
