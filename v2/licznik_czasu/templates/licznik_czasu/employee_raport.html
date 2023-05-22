@@ -1,11 +1,112 @@
 {% extends "account/base.html" %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% block head_title %}Projekt: {{ project.project_name }}{% endblock %}
+{% load static %}
 
-</body>
-</html>
+{% block extra_head %}
+
+<style>
+
+
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+        overflow: hidden;
+        background-color: white;
+        width: 100%;
+    }
+
+    thead {
+        background-color: black;
+        color: white;
+    }
+
+    td, th {
+        padding: 10px;
+        position: relative;
+    }
+
+    tr:hover{
+        background-color: rgba(11, 83, 158, 0.5);
+    }
+
+    td:hover::after,th:hover::after {
+        background-color: rgba(11, 83, 158, 0.5);
+        content: '\00a0';
+        height: 10000px;
+        left: 0;
+        position: absolute;
+        top: -1000px;
+        width: 100%;
+    }
+</style>
+<script type="text/javascript">var csrfToken = "{{ csrf_token }}"</script>
+<script src="{% static 'view-project.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container h-auto w-100 mb-3 p-5 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
+        <div class="d-flex justify-content-between mb-4">
+            <h1 class="fs-1">Płachta pracowników</h1>
+            <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'home' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="rounded">
+                <thead>
+                    <tr>
+                        <th scope="col">Imię i nazwisko</th>
+                        <th scope="col">I</th>
+                        <th scope="col">II</th>
+                        <th scope="col">III</th>
+                        <th scope="col">IV</th>
+                        <th scope="col">V</th>
+                        <th scope="col">VI</th>
+                        <th scope="col">VII</th>
+                        <th scope="col">VIII</th>
+                        <th scope="col">IX</th>
+                        <th scope="col">X</th>
+                        <th scope="col">XI</th>
+                        <th scope="col">XII</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Markdasdasdadada</th>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Markd</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
