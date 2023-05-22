@@ -29,14 +29,14 @@
             <td>{{ task.employee }}</td>
             <td>{{ task.time_started }}</td>
             <td>{{ task.time_ended }}</td>
-            <td>{{ task.time_elapsed|make_list|slice:":7"|join:"" }}</td>
+            <td>{{ task.time_elapsed }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 <div>
     <p>Łącznie: {{ tasktimer|length }}</p>
-    <p>Łączny czas pracy: {{ tasktimers_totaltime|make_list|slice:":7"|join:"" }}</p>
+    <p>Łączny czas pracy: {{ tasktimers_totaltime }}</p>
 </div>
 
 

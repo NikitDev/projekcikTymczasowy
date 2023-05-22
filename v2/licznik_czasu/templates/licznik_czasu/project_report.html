@@ -127,7 +127,7 @@
                                     <td>{{ task.start }}</td>
                                     <td>{{ task.end }}</td>
                                     {% if task.total_elapsed %}
-                                        <td>{{ task.total_elapsed|make_list|slice:":7"|join:"" }}</td>
+                                        <td>{{ task.total_elapsed }}</td>
                                     {% else %}
                                         <td>-</td>
                                     {% endif %}
@@ -154,7 +154,7 @@
                                                             <td>{{ task2.employee }}</td>
                                                             <td>{{ task2.time_started }}</td>
                                                             <td>{{ task2.time_ended }}</td>
-                                                            <td>{{ task2.time_elapsed|make_list|slice:":7"|join:"" }}</td>                                                                </tr>
+                                                            <td>{{ task2.time_elapsed }}</td>                                                                </tr>
                                                     </tbody>                                                   
                                                 {% endfor %}
                                             {% else %}
@@ -194,7 +194,7 @@
                                         <td scope="col">{{ task.employee }}</td>
                                         <td scope="col">{{ task.time_started }}</td>
                                         <td scope="col">{{ task.time_ended }}</td>
-                                        <td scope="col">{{ task.time_elapsed|make_list|slice:":7"|join:"" }}</td>
+                                        <td scope="col">{{ task.time_elapsed }}</td>
                                     </tr>
                                 {% endfor %}
                                 <tr class="bg-white">
@@ -203,7 +203,7 @@
                                     <td scope="col"></td>
                                     <td scope="col"></td>
                                     <td scope="col"><b>Łącznie: {{ tasktimer|length }}</b></td>
-                                    <td scope="col"><b>{{ tasktimers_totaltime|make_list|slice:":7"|join:"" }}</b></td>
+                                    <td scope="col"><b>{{ tasktimers_totaltime }}</b></td>
                                 </tr>  
                             </tbody>
                         </table>
