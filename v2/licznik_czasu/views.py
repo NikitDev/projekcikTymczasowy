@@ -277,3 +277,8 @@ def project_report(request, project_id):
             return response
 
     return render(request, 'licznik_czasu/project_report.html', context)
+
+
+def employee_raport(request):
+    return render(request, 'licznik_czasu/employee_raport.html')
+
