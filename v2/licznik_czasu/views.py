@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.template.loader import get_template
 
 from .models import Project, Task, TaskTimer, Client, Employee
-from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
+from .forms import UserForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
