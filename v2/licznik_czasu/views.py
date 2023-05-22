@@ -279,6 +279,27 @@ def project_report(request, project_id):
     return render(request, 'licznik_czasu/project_report.html', context)
 
 
+@login_required
 def employee_raport(request):
-    return render(request, 'licznik_czasu/employee_raport.html')
+    if not request.user.is_superuser:
+        return redirect('home')
+    employee_table = {}
+    year = timezone.now().year
+    timers = TaskTimer.objects.all()
+    time_in_months = [timedelta(0) for i in range(12)]
+    for timer in timers:
+        if timer.time_ended.year == year:
+            employee_table.setdefault(timer.user, time_in_months.copy())
+            employee_table[timer.user][timer.time_ended.month] += timer.time_elapsed
+    # format dict data
+    for key, value in employee_table.items():
+        for i in range(len(value)):
+            if value[i] == timedelta(0):
+                employee_table[key][i] = "X"
+            else:
+                employee_table[key][i] = str(employee_table[key][i]).split(".")[0]
+    context = {
+        'employee_table': employee_table,
+    }
+    return render(request, 'licznik_czasu/employee_raport.html', context)
 

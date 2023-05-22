@@ -75,36 +75,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for key, value in employee_table.items %}
                     <tr>
-                        <th scope="row">Markdasdasdadada</th>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
+                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                        {% for time in value %}
+                        <td>{{ time }}</td>
+                        {% endfor %}
                     </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Markd</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
