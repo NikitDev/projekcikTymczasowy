@@ -4,58 +4,30 @@
 {% load static %}
 
 {% block extra_head %}
-<style>
-    table {
-        border-spacing: 0;
-        border-collapse: collapse;
-        overflow: hidden;
-        background-color: white;
-        width: 100%;
-    }
-    thead {
-        background-color: black;
-        color: white;
-    }
-    td, th {
-        padding: 10px;
-        position: relative;
-    }
-    tr:hover{
-        background-color: rgba(11, 83, 158, 0.5);
-    }
-    td:hover::after,th:hover::after {
-        background-color: rgba(11, 83, 158, 0.5);
-        content: '\00a0';
-        height: 10000px;
-        left: 0;
-        position: absolute;
-        top: -1000px;
-        width: 100%;
-    }
-</style>
 <script src="{% static 'employee-report.js' %}"></script>
 {% endblock %}
 
 {% block content %}
     <div class="container h-auto w-100 mb-3 p-5 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
         <div class="d-flex justify-content-between mb-4">
-            <div class="d-flex flex-row gap-4">
-                <h1 class="fs-1">Płachta pracowników: {{ year }}</h1>
-                <form id="select-form" method="POST" class="d-flex flex-row gap-2 mb-0">
-                    {% csrf_token %}
-                    <select id="year-selector" name="year-selector" class="form-select w-auto h-auto"></select>
-                    <button type="submit" class="btn btn-primary">Generuj</button>
-                </form>
-             </div>
+            <h1 class="fs-1">Płachta pracowników: {{ year }}</h1>
             <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'home' %}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
                 </svg>
             </a>
         </div>
-        <div id="table" class="table-responsive">
-            <table class="rounded">
-                <thead>
+        <div class="d-flex w-25 flex-column mb-4 text-center">
+            <h2 class="mb-3">Wybierz rok</h2>
+            <form id="select-form" method="POST" class="d-flex flex-column gap-2 mb-0">
+                {% csrf_token %}
+                <select id="year-selector" name="year-selector" class="form-select w-auto h-auto"></select>
+                <button type="submit" class="btn btn-primary">Generuj</button>
+            </form>
+        </div>
+        <div class="w-100 table-responsive">
+            <table class="table table-light overflow-hidden table-striped text-center rounded">
+                <thead class="table-primary">
                     <tr>
                         <th scope="col">Imię i nazwisko</th>
                         <th scope="col">I</th>
@@ -72,7 +44,7 @@
                         <th scope="col">XII</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for key, value in employee_table.items %}
                     <tr>
                         <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>

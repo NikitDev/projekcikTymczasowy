@@ -280,7 +280,7 @@ def project_report(request, project_id):
 
 
 @login_required
-def employee_raport(request):
+def employee_report(request):
     if not request.user.is_superuser:
         return redirect('home')
     employee_table = {}
@@ -303,4 +303,4 @@ def employee_raport(request):
                 else:
                     employee_table[key][i] = str(employee_table[key][i]).split(".")[0]
         context['year'] = year
-    return render(request, 'licznik_czasu/employee_raport.html', context)
+    return render(request, 'licznik_czasu/employee_report.html', context)
