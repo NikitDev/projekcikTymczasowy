@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, ProjectForm, TaskForm, TaskEmployeeForm
 from django import forms
@@ -81,6 +84,21 @@ def create_project(request):
     return render(request, "licznik_czasu/create_project.html", context)
 
 
+@require_POST
+@csrf_exempt
+def save_view(request, project_id, task_id):
+    start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
+    end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
+    duration = end_time - start_time
+    timer = TaskTimer.objects.get(pk=request.session.get('pk'), user=request.user)
+    timer.time_ended = end_time
+    timer.time_elapsed = duration
+    timer.is_active = False
+    timer.save()
+    request.session['start_time'] = None
+    return HttpResponse(status=200)
+
+
 @login_required
 def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
@@ -95,20 +113,11 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id)
+            timer = TaskTimer.objects.create(task_id=task_id, user=request.user, is_active=True)
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
         elif action == 'stop':
-            start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
-            end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
-            duration = end_time - start_time
-            # Filter TaskTimer via pk to find the right one
-            timer = TaskTimer.objects.get(pk=request.session.get('pk'))
-            timer.time_ended = end_time
-            timer.time_elapsed = duration
-            timer.save()
-            request.session['start_time'] = None
-            return JsonResponse({'success': True})
+            save_view(request, project_id, task_id)
         # Handle forms
         elif action == "task-info-form":
             if form.is_valid():

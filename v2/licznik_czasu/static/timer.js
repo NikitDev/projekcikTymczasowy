@@ -1,27 +1,19 @@
 $(document).ready(function() {
     var timerInterval, start_time, flag;
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
+    var project_id, task_id, session_id;
 
-    if (value == 'None') {
+    if (session_id != task_id) {
+        flag = true;
+        $("#timer_button").text("START");
+        $("#timer_button").attr("disabled", true);
+        $("#timer-display").text("Inny licznik już pracuje: " + session_id);
+    }
+    else {
         flag = true;
         $("#timer_button").text("START");
         $("#timer-display").text("00:00:00");
     }
-    else {
-        if (session_id == task_id) {
-            start_time = new Date(parseInt(value)*1000).getTime();
-            timer1();
-            timerInterval = setInterval(timer1, 1000);
-            flag = false;
-            $("#timer_button").text("STOP");
-        }
-        else {
-            flag = true;
-            $("#timer_button").text("START");
-            $("#timer_button").attr("disabled", true);
-            $("#timer-display").text("Inny licznik już pracuje: " + session_id);
-        }
-    };
 
     function timer1() {
         var now = new Date().getTime();
@@ -34,26 +26,42 @@ $(document).ready(function() {
             minutes.toString().padStart(2, '0') + ':' +
             seconds.toString().padStart(2, '0');
         $("#timer-display").text(timeString);
-    };
+    }
+
+    function beforeUnloadHandler() {
+        fetch('/project/' + project_id + '/task/' + task_id + '/save_view/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({}),
+        });
+    }
 
     $("#timer_button").click(function() {
         if (flag) {
-        // start
+            // start
             var data = {
-            "action": "start",
-            "csrfmiddlewaretoken": csrf
+                "action": "start",
+                "csrfmiddlewaretoken": csrf
             };
             $.post("", data, function(response) {
-                    if (response.success) {
-                        start_time = new Date().getTime();
-                        timerInterval = setInterval(timer1, 1000);
-                    }
+                if (response.success) {
+                    start_time = new Date().getTime();
+                    timerInterval = setInterval(timer1, 1000);
+                }
             });
             flag = false;
             $("#timer_button").text("STOP");
-        }
-        else {
-        // stop
+
+            var urlParts = window.location.pathname.split('/');
+            project_id = urlParts[2];
+            task_id = urlParts[4];
+
+            window.addEventListener("beforeunload", beforeUnloadHandler);
+        } else {
+            // stop
             clearInterval(timerInterval);
             $('#timer-display').text('00:00:00');
             $("#timer_button").text("START");
@@ -62,6 +70,8 @@ $(document).ready(function() {
                 'action': "stop"
             });
             flag = true;
-        };
+
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+        }
     });
 });
