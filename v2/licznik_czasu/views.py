@@ -104,7 +104,7 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id)
+            timer = TaskTimer.objects.create(task_id=task_id, user=request.user)
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
         elif action == 'stop':
@@ -163,13 +163,21 @@ def project_report(request, project_id):
     if request.user.who_is != 'CL':
         return HttpResponse('Nie masz dostepu do tej strony.')
 
+    task_filter = request.POST.get('task_filter', None) # nazwa wybranego filtra zadania
+    employee_filter = request.POST.get('employee_filter', None) # nazwa wybranego filtra pracownika
+
     project = get_object_or_404(Project, pk=project_id)
+    tasks = Task.objects.filter(project=project_id)
 
     last_day = datetime.now() - timedelta(days=1)
     last_week = datetime.now() - timedelta(weeks=1)
     last_month = datetime.now() - timedelta(weeks=4)
+    any_date = datetime.min
+
+    flag = True # flaga do wyboru trybu wyświetlania tabeli
 
     time_filters = {
+        'Any date': any_date,
         'Last day': last_day,
         'Last week': last_week,
         'Last month': last_month
@@ -177,44 +185,106 @@ def project_report(request, project_id):
 
     context = {
         'project': project,
-        'time_filters': time_filters
+        'time_filters': time_filters,
+        'task_filter': task_filter,
+        'employee_filter': employee_filter,
+        'tasks': tasks
     }
 
     if request.method == 'POST':
         selected_time_filter = request.POST.get('time_filter', None)
         generate_report = request.POST.get('generate_report', None)
-        task_filter = request.POST.get('task_filter', None)
-        if selected_time_filter is not None:
-            selected_time_filter_date = time_filters[selected_time_filter]
-            tasks_list = Task.objects.filter(project=project_id)
-            if task_filter is not None:
-                tasks = Task.objects.filter(project=project_id, task_name=task_filter)
-            else:
-                tasks = Task.objects.filter(project=project_id)
-            tasktimers = []
-            for task in tasks:
-                task_time = list(TaskTimer.objects.filter(task=task))
-                for time in task_time:
-                    if time.time_started.date() >= selected_time_filter_date.date():
-                        taskinfo = {
-                            'name': time.task.task_name,
-                            'time_started': time.time_started,
-                            'time_ended': time.time_ended,
-                            'time_elapsed': time.time_elapsed
-                        }
-                        tasktimers.append(taskinfo)
-        else:
-            tasks = None
 
-        if tasks is not None:
+        if selected_time_filter is not None: # filtrowanie po czasie
+            selected_time_filter_date = time_filters[selected_time_filter]
+        else:
+            selected_time_filter_date = datetime.min
+
+        tasktimers = [] # lista wszystkich timerów bez względu na taska, dla filtrowania i raportów
+        total = timedelta(0) # łączny czas timerów dla filtrowania.
+
+        tasktotal = [] # lista tasków, w celu wyświetlenia podsumowania w tabeli bez filtrowania
+
+        for task in tasks:
+            task_time = list(TaskTimer.objects.filter(task=task)) # lista timerów dla konkretnego taska
+
+            tasktimers2 = [] # lista wszystkich timerów dla konkretnego taska
+            total2 = timedelta(0) # łączny czas na każdego taska.
+            start_dates = [] # daty rozpoczęcia timerów dla konkretnego taska
+            end_dates = [] # daty zakończenia timerów dla konkretnego taska
+
+            for time in task_time:
+                if time.time_started.date() >= selected_time_filter_date.date(): # filtrowanie po czasie
+                    if time.time_elapsed:
+                        total2 += time.time_elapsed
+                    taskinfo = { # informacje o konkretnym timerze
+                        'ids': task.id,
+                        'name': time.task.task_name,
+                        'time_started': time.time_started,
+                        'time_ended': time.time_ended,
+                        'time_elapsed': str(time.time_elapsed).split(".")[0],
+                        'employee': time.user
+                    }
+
+                    # filtrowanie według zadania i pracownika
+                    if task_filter != "None" and employee_filter != "None":
+                        if task_filter == task.task_name and employee_filter == str(time.user):
+                            tasktimers.append(taskinfo)
+                            if time.time_elapsed:
+                                total += time.time_elapsed
+                    elif task_filter != "None" and employee_filter == "None":
+                        if task_filter == task.task_name:
+                            tasktimers.append(taskinfo)
+                            if time.time_elapsed:
+                                total += time.time_elapsed
+                    elif task_filter == "None" and employee_filter != "None":
+                        if employee_filter == str(time.user):
+                            tasktimers.append(taskinfo)
+                            if time.time_elapsed:
+                                total += time.time_elapsed
+                    else:
+                        tasktimers.append(taskinfo)
+                        if time.time_elapsed:
+                            total += time.time_elapsed
+                        flag = False
+
+                    tasktimers2.append(taskinfo)
+                    start_dates.append(time.time_started)
+                    if time.time_ended:
+                        end_dates.append(time.time_ended)
+
+            if start_dates:
+                start_date = min(start_dates)
+            else:
+                start_date = "-"
+            if end_dates:
+                end_date = max(end_dates)
+            else:
+                end_date = "-"
+
+            task3 = { # informacje o konkretnym tasku, w celu wyświetlenia podsumowania
+                'task': task,
+                'total_elapsed': str(total2).split(".")[0],
+                'start': start_date,
+                'end': end_date,
+                'all_timers': tasktimers2
+            }
+
+            tasktotal.append(task3)
+
+        if tasks:
             context = {
                 'time_filters': time_filters,
                 'project': project,
                 'tasks': tasks,
-                'tasks_list': tasks_list,
                 'tasktimer': tasktimers,
                 'time_filter': selected_time_filter,
-                'selected_time_filter_date': selected_time_filter_date
+                'selected_time_filter_date': selected_time_filter_date,
+                'tasktotal': tasktotal,
+                'task_filter': task_filter,
+                'employee_filter': employee_filter,
+                'flag': flag,
+                'tasktimers_totaltime': str(total).split(".")[0]
             }
 
         if generate_report is not None:
@@ -223,9 +293,36 @@ def project_report(request, project_id):
             response['Content-Disposition'] = 'filename="project_report.pdf"'
             template = get_template(template_path)
             html = template.render(context)
-            pisa_status = pisa.CreatePDF(html, dest=response)
+            pisa_status = pisa.CreatePDF(html, dest=response, encoding='UTF-8')
             if pisa_status.err:
                 return HttpResponse('error')
             return response
 
     return render(request, 'licznik_czasu/project_report.html', context)
+
+
+@login_required
+def employee_report(request):
+    if not request.user.is_superuser:
+        return redirect('home')
+    employee_table = {}
+    context = {
+        'employee_table': employee_table,
+    }
+    if request.method == "POST":
+        year = int(request.POST.getlist("year-selector")[0])
+        timers = TaskTimer.objects.all()
+        time_in_months = [timedelta(0) for _ in range(12)]
+        for timer in timers:
+            if timer.time_ended and timer.time_ended.year == year:
+                employee_table.setdefault(timer.user, time_in_months.copy())
+                employee_table[timer.user][timer.time_ended.month-1] += timer.time_elapsed
+        # format dict data
+        for key, value in employee_table.items():
+            for i in range(len(value)):
+                if value[i] == timedelta(0):
+                    employee_table[key][i] = "X"
+                else:
+                    employee_table[key][i] = str(employee_table[key][i]).split(".")[0]
+        context['year'] = year
+    return render(request, 'licznik_czasu/employee_report.html', context)

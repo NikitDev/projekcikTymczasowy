@@ -1,3 +1,13 @@
+{% block extra_head %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+    *{
+        font-family: 'Roboto', sans-serif;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h1>Raport projektu</h1>
 <h2>Zadania dla projektu "{{ project.project_name }}"</h2>
@@ -6,6 +16,7 @@
     <thead>
         <tr>
             <th>Nazwa zadania</th>
+            <th>Pracownik</th>
             <th>Data rozpoczecia</th>
             <th>Data zakonczenia</th>
             <th>Czas pracy nad zadaniem</th>
@@ -15,6 +26,7 @@
         {% for task in tasktimer %}
         <tr>
             <td>{{ task.name }}</td>
+            <td>{{ task.employee }}</td>
             <td>{{ task.time_started }}</td>
             <td>{{ task.time_ended }}</td>
             <td>{{ task.time_elapsed }}</td>
@@ -22,6 +34,10 @@
         {% endfor %}
     </tbody>
 </table>
+<div>
+    <p>Lacznie: {{ tasktimer|length }}</p>
+    <p>Laczny czas pracy: {{ tasktimers_totaltime }}</p>
+</div>
 
 
 
