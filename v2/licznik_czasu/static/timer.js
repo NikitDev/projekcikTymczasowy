@@ -18,8 +18,8 @@ $(document).ready(function() {
         else {
             flag = true;
             $("#timer_button").text("START");
-            $("#timer_button").attr("disabled", true);            
-            $("#timer-display").html("Inny licznik już pracuje: <a href='" + taskUrl + "'>" + session_id + "</a>");
+            $("#timer_button").attr("disabled", true);
+            $("#timer-display").text("Inny licznik już pracuje: " + session_id);
         }
     };
 
