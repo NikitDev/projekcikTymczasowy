@@ -292,7 +292,7 @@ def employee_report(request):
         timers = TaskTimer.objects.all()
         time_in_months = [timedelta(0) for _ in range(12)]
         for timer in timers:
-            if timer.time_ended.year == year:
+            if timer.time_ended and timer.time_ended.year == year:
                 employee_table.setdefault(timer.user, time_in_months.copy())
                 employee_table[timer.user][timer.time_ended.month-1] += timer.time_elapsed
         # format dict data
