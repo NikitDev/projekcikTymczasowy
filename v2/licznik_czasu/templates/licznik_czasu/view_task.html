@@ -66,7 +66,9 @@
                     <output class="form-control" name="task-creation-date" id="task-creation-date">{{ task.creation_date }}</output>
                     <label for="task-creation-date">Data utworzenia</label>
                 </div>
-                <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>
+                {% if user.who_is != 'CL' or user.is_superuser %}
+                    <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>
+                {% endif %}
             </form>
             <div id="employee-table" class="col-lg-6 col-md-12 rounded bg-white overflow-hidden" style="height: fit-content;">
                 <table class="table table-striped table-hover table-white">

@@ -160,8 +160,9 @@ def delete_task(request, task_id):
 
 @login_required
 def project_report(request, project_id):
-    if request.user.who_is != 'CL':
-        return HttpResponse('Nie masz dostepu do tej strony.')
+    if request.user.who_is != 'CL' and not request.user.is_superuser:
+        messages.warning(request, 'Nie masz dostepu do tej strony.')
+        return redirect("view_project", project_id=project_id)
 
     task_filter = request.POST.get('task_filter', None) # nazwa wybranego filtra zadania
     employee_filter = request.POST.get('employee_filter', None) # nazwa wybranego filtra pracownika
