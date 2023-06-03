@@ -306,6 +306,7 @@ def project_report(request, project_id):
 @login_required
 def employee_report(request):
     if not request.user.is_superuser:
+        messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect('home')
     if request.method == "POST":
         employee_table = {}
