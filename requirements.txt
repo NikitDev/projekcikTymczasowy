@@ -2,4 +2,4 @@ Django~=4.1.7
 psycopg2~=2.9.5
 python-dotenv~=1.0.0
 django-allauth~=0.53.1
-xhtml2pdf~=0.2.11
+weasyprint~=59.0
