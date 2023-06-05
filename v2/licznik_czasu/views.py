@@ -310,6 +310,7 @@ def employee_report(request):
         messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect('home')
     if request.method == "POST":
+        generate_report = request.POST.get('generate_report', None) #pobieranie wartości generate report
         employee_table = {}
         year = int(request.POST.getlist("year-selector")[0])
         month = int(request.POST.getlist("month-selector")[0])
@@ -346,6 +347,19 @@ def employee_report(request):
             'days': range(days),
             'flag': flag
         }
+        if generate_report is not None: #przy pobraniu wartości generate_report
+            template_path = 'licznik_czasu/employee_report_pdf.html' #link do tamplate pdf
+            template = get_template(template_path)
+            html = template.render(context)
+
+            pdf = HTML(string=html).write_pdf()
+
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="employee_report.pdf"' #nazwa wygenerowanego pliku / nie jest zapisywany
+            response.write(pdf)
+
+            return response #po wygenerowaniu raportu od razu go otwiera
+
     else:
         context = {}
     return render(request, 'licznik_czasu/employee_report.html', context)
