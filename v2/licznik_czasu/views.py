@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from xhtml2pdf import pisa
 from datetime import datetime, timedelta
+from calendar import monthrange
 
 
 def can_access_project(request, project_id):
@@ -305,19 +306,30 @@ def project_report(request, project_id):
 @login_required
 def employee_report(request):
     if not request.user.is_superuser:
+        messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect('home')
-    employee_table = {}
-    context = {
-        'employee_table': employee_table,
-    }
     if request.method == "POST":
+        employee_table = {}
         year = int(request.POST.getlist("year-selector")[0])
-        timers = TaskTimer.objects.all()
-        time_in_months = [timedelta(0) for _ in range(12)]
-        for timer in timers:
-            if timer.time_ended and timer.time_ended.year == year:
-                employee_table.setdefault(timer.user, time_in_months.copy())
-                employee_table[timer.user][timer.time_ended.month-1] += timer.time_elapsed
+        month = int(request.POST.getlist("month-selector")[0])
+        days = 0
+        if month == 0:
+            flag = "year"
+            timers = TaskTimer.objects.all()
+            time_in_months = [timedelta(0) for _ in range(12)]
+            for timer in timers:
+                if timer.time_ended and timer.time_ended.year == year:
+                    employee_table.setdefault(timer.user, time_in_months.copy())
+                    employee_table[timer.user][timer.time_ended.month-1] += timer.time_elapsed
+        else:
+            flag = "month"
+            days = monthrange(year, month)[1]
+            timers = TaskTimer.objects.all()
+            time_in_days = [timedelta(0) for _ in range(days)]
+            for timer in timers:
+                if timer.time_ended and timer.time_ended.year == year and timer.time_ended.month == month:
+                    employee_table.setdefault(timer.user, time_in_days.copy())
+                    employee_table[timer.user][timer.time_ended.day-1] += timer.time_elapsed
         # format dict data
         for key, value in employee_table.items():
             for i in range(len(value)):
@@ -325,5 +337,14 @@ def employee_report(request):
                     employee_table[key][i] = "X"
                 else:
                     employee_table[key][i] = str(employee_table[key][i]).split(".")[0]
-        context['year'] = year
+
+        context = {
+            'employee_table': employee_table,
+            'year': year,
+            'month': month,
+            'days': range(days),
+            'flag': flag
+        }
+    else:
+        context = {}
     return render(request, 'licznik_czasu/employee_report.html', context)
