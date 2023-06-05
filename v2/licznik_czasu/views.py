@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.template.loader import get_template
-
+from weasyprint import HTML
 from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
-from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 from calendar import monthrange
 
@@ -291,13 +290,15 @@ def project_report(request, project_id):
 
         if generate_report is not None:
             template_path = 'licznik_czasu/pdf_template.html'
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="project_report.pdf"'
             template = get_template(template_path)
             html = template.render(context)
-            pisa_status = pisa.CreatePDF(html, dest=response, encoding='UTF-8')
-            if pisa_status.err:
-                return HttpResponse('error')
+
+            pdf = HTML(string=html).write_pdf()
+
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="project_report.pdf"'
+            response.write(pdf)
+
             return response
 
     return render(request, 'licznik_czasu/project_report.html', context)
