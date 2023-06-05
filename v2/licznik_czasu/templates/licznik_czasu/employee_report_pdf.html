@@ -1,16 +1,69 @@
+
 <!DOCTYPE html>
-<!-- testowy template do pdf -->
+
 <html>
 <head>
     <style>
-        /* CSS styles for the PDF */
-        /* ... */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+      
+        .month *{
+            font-family: 'Roboto', sans-serif;
+            font-size: xx-small;
+        }
+
+        .year *{
+            font-family: 'Roboto', sans-serif;
+            font-weight: bold;
+        }
+
+        body {
+            writing-mode: tb-rl;
+            text-align: center;
+        }
+
+        @page{
+            size: landscape;
+        }
+
+        .year{
+            border-collapse: collapse;
+        }
+
+        .year th{
+            background-color: blanchedalmond;
+        }
+
+        .year th, td{
+            height: 50px;
+
+        }
+
+        .year table, th ,td{
+            padding: 2px;
+            border: 1px solid;
+        }
+
+        .month {
+            margin-left: -60px;
+            margin-right: -60px;
+            border-collapse: collapse;
+        }
+        
+        .month th{
+            background-color: blanchedalmond;
+        }
+
+        .month th, td{
+            height: 50px;
+        }
+
     </style>
 </head>
 <body>
-    {% if flag == "year" %}
-            <table class="table table-light overflow-hidden table-striped text-center rounded">
-                <thead class="table-primary">
+    <h1>Płachta pracowników: {{ year }}{% if month != 0 and month %}-{{ month }}{% endif %}</h1>
+        {% if flag == "year" %}
+            <table class="year">
+                <thead>
                     <tr>
                         <th scope="col">Imię i nazwisko</th>
                         <th scope="col">I</th>
@@ -27,7 +80,7 @@
                         <th scope="col">XII</th>
                     </tr>
                 </thead>
-                <tbody class="table-group-divider">
+                <tbody>
                     {% for key, value in employee_table.items %}
                     <tr>
                         <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
@@ -39,8 +92,8 @@
                 </tbody>
             </table>
         {% elif flag == "month" %}
-            <table class="table table-light overflow-hidden table-striped text-center rounded">
-                <thead class="table-primary">
+            <table class="month">
+                <thead>
                     <tr id="table-header">
                         <th scope="col">Imię i nazwisko</th>
                         {% for day in days%}
@@ -48,7 +101,7 @@
                         {% endfor%}
                     </tr>
                 </thead>
-                <tbody class="table-group-divider">
+                <tbody>
                     {% for key, value in employee_table.items %}
                     <tr>
                         <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
@@ -60,5 +113,6 @@
                 </tbody>
             </table>
         {% endif %}
+
 </body>
 </html>
