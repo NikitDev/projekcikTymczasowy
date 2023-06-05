@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- testowy template do pdf -->
+<html>
+<head>
+    <style>
+        /* CSS styles for the PDF */
+        /* ... */
+    </style>
+</head>
+<body>
+    {% if flag == "year" %}
+            <table class="table table-light overflow-hidden table-striped text-center rounded">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Imię i nazwisko</th>
+                        <th scope="col">I</th>
+                        <th scope="col">II</th>
+                        <th scope="col">III</th>
+                        <th scope="col">IV</th>
+                        <th scope="col">V</th>
+                        <th scope="col">VI</th>
+                        <th scope="col">VII</th>
+                        <th scope="col">VIII</th>
+                        <th scope="col">IX</th>
+                        <th scope="col">X</th>
+                        <th scope="col">XI</th>
+                        <th scope="col">XII</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for key, value in employee_table.items %}
+                    <tr>
+                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                        {% for time in value %}
+                        <td>{{ time }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif flag == "month" %}
+            <table class="table table-light overflow-hidden table-striped text-center rounded">
+                <thead class="table-primary">
+                    <tr id="table-header">
+                        <th scope="col">Imię i nazwisko</th>
+                        {% for day in days%}
+                            <th scope="col">{{ day|add:1 }}</th>
+                        {% endfor%}
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for key, value in employee_table.items %}
+                    <tr>
+                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                        {% for time in value %}
+                        <td>{{ time }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+</body>
+</html>
