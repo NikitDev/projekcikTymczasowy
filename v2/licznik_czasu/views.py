@@ -338,7 +338,10 @@ def employee_report(request):
                 if value[i] == timedelta(0):
                     employee_table[key][i] = "X"
                 else:
-                    employee_table[key][i] = str(employee_table[key][i]).split(".")[0]
+                    time_seconds = employee_table[key][i].total_seconds()
+                    time_hours = time_seconds // 3600
+                    time_minutes = time_seconds % 3600 // 60
+                    employee_table[key][i] = f"{time_hours:g}h {time_minutes:g}m"
 
         context = {
             'employee_table': employee_table,

@@ -6,36 +6,38 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
       
-        .month *{
-            font-family: 'Roboto', sans-serif;
-            font-size: xx-small;
+        @page{
+            size: landscape;
         }
 
-        .year *{
+        *{
             font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-        }
+        }  
 
         body {
             writing-mode: tb-rl;
             text-align: center;
         }
 
-        @page{
-            size: landscape;
-        }
-
-        .year{
+        table{
+            width: 100%;
             border-collapse: collapse;
         }
 
-        .year th{
+        th{
             background-color: blanchedalmond;
         }
 
-        .year th, td{
+        th, td{
             height: 50px;
+        }
 
+        .year *{
+            font-weight: bold;
+        }
+
+        .year td{
+            width: 50px;
         }
 
         .year table, th ,td{
@@ -43,76 +45,74 @@
             border: 1px solid;
         }
 
+        .month *{
+            font-size: xx-small;
+        }
+
         .month {
             margin-left: -60px;
             margin-right: -60px;
-            border-collapse: collapse;
-        }
-        
-        .month th{
-            background-color: blanchedalmond;
         }
 
-        .month th, td{
-            height: 50px;
+        .month td{
+            width: 27px;
         }
-
     </style>
 </head>
+
 <body>
     <h1>Płachta pracowników: {{ year }}{% if month != 0 and month %}-{{ month }}{% endif %}</h1>
-        {% if flag == "year" %}
-            <table class="year">
-                <thead>
-                    <tr>
-                        <th scope="col">Imię i nazwisko</th>
-                        <th scope="col">I</th>
-                        <th scope="col">II</th>
-                        <th scope="col">III</th>
-                        <th scope="col">IV</th>
-                        <th scope="col">V</th>
-                        <th scope="col">VI</th>
-                        <th scope="col">VII</th>
-                        <th scope="col">VIII</th>
-                        <th scope="col">IX</th>
-                        <th scope="col">X</th>
-                        <th scope="col">XI</th>
-                        <th scope="col">XII</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in employee_table.items %}
-                    <tr>
-                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
-                        {% for time in value %}
-                        <td>{{ time }}</td>
-                        {% endfor %}
-                    </tr>
+    {% if flag == "year" %}
+        <table class="year">
+            <thead>
+                <tr>
+                    <th scope="col">Imię i nazwisko</th>
+                    <th scope="col">I</th>
+                    <th scope="col">II</th>
+                    <th scope="col">III</th>
+                    <th scope="col">IV</th>
+                    <th scope="col">V</th>
+                    <th scope="col">VI</th>
+                    <th scope="col">VII</th>
+                    <th scope="col">VIII</th>
+                    <th scope="col">IX</th>
+                    <th scope="col">X</th>
+                    <th scope="col">XI</th>
+                    <th scope="col">XII</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in employee_table.items %}
+                <tr>
+                    <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                    {% for time in value %}
+                    <td>{{ time }}</td>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% elif flag == "month" %}
-            <table class="month">
-                <thead>
-                    <tr id="table-header">
-                        <th scope="col">Imię i nazwisko</th>
-                        {% for day in days%}
-                            <th scope="col">{{ day|add:1 }}</th>
-                        {% endfor%}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in employee_table.items %}
-                    <tr>
-                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
-                        {% for time in value %}
-                        <td>{{ time }}</td>
-                        {% endfor %}
-                    </tr>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif flag == "month" %}
+        <table class="month">
+            <thead>
+                <tr id="table-header">
+                    <th scope="col">Imię i nazwisko</th>
+                    {% for day in days%}
+                        <th scope="col">{{ day|add:1 }}</th>
+                    {% endfor%}
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in employee_table.items %}
+                <tr>
+                    <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                    {% for time in value %}
+                    <td>{{ time }}</td>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 </body>
 </html>
