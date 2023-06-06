@@ -216,18 +216,18 @@ def project_report(request, project_id):
         else:
             selected_time_filter_date = datetime.min
 
-        tasktimers = [] # lista wszystkich timerów bez względu na taska, dla filtrowania i raportów
-        total = timedelta(0) # łączny czas timerów dla filtrowania.
+        tasktimers = [] # lista wszystkich timerów bez względu na taska; dla wyświetlania filtrowania i raportów pdf
+        total = timedelta(0) # łączny czas timerów po zastosowaniu filtrowania
 
-        tasktotal = [] # lista tasków, w celu wyświetlenia podsumowania w tabeli bez filtrowania
+        tasktotal = [] # lista tasków; w celu wyświetlenia podsumowania w rozwijanej tabeli, bez filtrowania
 
         for task in tasks:
             task_time = list(TaskTimer.objects.filter(task=task)) # lista timerów dla konkretnego taska
 
             tasktimers2 = [] # lista wszystkich timerów dla konkretnego taska
-            total2 = timedelta(0) # łączny czas na każdego taska.
-            start_dates = [] # daty rozpoczęcia timerów dla konkretnego taska
-            end_dates = [] # daty zakończenia timerów dla konkretnego taska
+            total2 = timedelta(0) # łączny czas na każdego taska
+            start_dates = [] # daty rozpoczęcia timerów dla konkretnego taska; żeby wybrać pierwszą
+            end_dates = [] # daty zakończenia timerów dla konkretnego taska; żeby wybrąć ostatnią
 
             for time in task_time:
                 if time.time_started.date() >= selected_time_filter_date.date(): # filtrowanie po czasie
@@ -278,7 +278,7 @@ def project_report(request, project_id):
             else:
                 end_date = "-"
 
-            task3 = { # informacje o konkretnym tasku, w celu wyświetlenia podsumowania
+            task3 = { # informacje o konkretnym tasku; w celu wyświetlenia podsumowania
                 'task': task,
                 'total_elapsed': str(total2).split(".")[0],
                 'start': start_date,
