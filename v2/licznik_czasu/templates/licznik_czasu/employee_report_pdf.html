@@ -57,6 +57,10 @@
         .month td{
             width: 27px;
         }
+        
+        .date{
+            text-align: left;
+        }
     </style>
 </head>
 
@@ -114,5 +118,8 @@
             </tbody>
         </table>
     {% endif %}
+    <div class="date">
+        <p><b>Wygenerowano:</b> {% now "DATETIME_FORMAT" %}</p>
+    </div>
 </body>
 </html>
