@@ -131,12 +131,12 @@
                     <h1>Status zadania</h1>
                     {% endif %}
                 </div>
-                <div class="d-flex mb-3 rounded shadow-lg bg-white">
+                <div class="d-flex mb-3 rounded shadow-lg bg-white justify-content-center">
                     {% if user.who_is == "EM" %}
                     <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>
                     <button class="w-50 btn btn-primary" type="button" id="timer_button" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"></button>
                     {% else %}
-                    <div class="text-center w-50 me-0 mb-0 fs-2" id="display"></div>
+                    <div class="text-center fs-4" id="display"></div>
                     {% endif %}
                 </div>
             </div>
