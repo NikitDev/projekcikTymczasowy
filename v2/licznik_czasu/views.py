@@ -88,6 +88,18 @@ def view_project(request, project_id):
 
 
 @login_required
+def client_data(request, project_id, task_id):
+    data = TaskTimer.objects.filter(is_active=True, task_id=task_id)
+    dane = []
+    for osoba in data:
+        dane.append({
+            'imie': osoba.user.first_name,
+            'nazwisko': osoba.user.last_name
+        })
+    return JsonResponse(dane, safe=False)
+
+
+@login_required
 def view_task(request, project_id, task_id):
     check_permissions = can_access_project(request, project_id)
     if check_permissions:
@@ -104,7 +116,7 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id, user=request.user)
+            timer = TaskTimer.objects.create(task_id=task_id, user=request.user, is_active=True)
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
         elif action == 'stop':
@@ -115,6 +127,7 @@ def view_task(request, project_id, task_id):
             timer = TaskTimer.objects.get(pk=request.session.get('pk'))
             timer.time_ended = end_time
             timer.time_elapsed = duration
+            timer.is_active = False
             timer.save()
             request.session['start_time'] = None
             return JsonResponse({'success': True})
@@ -142,7 +155,9 @@ def view_task(request, project_id, task_id):
         "project_id": project_id,
         "session_id": request.session.get('task_id'),
         "task_id": task_id,
-        'current': request.session.get('start_time')
+        'current': request.session.get('start_time'),
+        'who_is': str(request.user.who_is),
+        'is_superuser': bool(request.user.is_superuser)
     }
     return render(request, "licznik_czasu/view_task.html", context)
 

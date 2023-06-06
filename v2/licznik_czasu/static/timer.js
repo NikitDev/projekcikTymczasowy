@@ -1,8 +1,11 @@
 $(document).ready(function() {
     var timerInterval, start_time, flag;
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
-
-    if (value == 'None') {
+    console.log("hihihihih");
+    if(who_is != 'CL' || is_superuser != true) {
+        console.log(who_is);
+        console.log(is_superuser);
+        if (value == 'None') {
         flag = true;
         $("#timer_button").text("START");
         $("#timer-display").text("00:00:00");
@@ -64,4 +67,6 @@ $(document).ready(function() {
             flag = true;
         };
     });
+    }
+
 });
