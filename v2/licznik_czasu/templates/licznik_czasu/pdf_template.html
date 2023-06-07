@@ -1,0 +1,60 @@
+{% block extra_head %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+    *{
+        font-family: 'Roboto', sans-serif;
+        font-size: 12px;
+    }
+
+    th{
+        text-align: center;
+        padding: 5px;
+    }
+    td{
+        text-align: center;
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Raport projektu: <i>{{ project.project_name }}</i></h1>
+<h2>ID projektu: <i>{{ project.id }}</i></h2>
+<table>
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nazwa zadania</th>
+            <th scope="col">Pracownik</th>
+            <th scope="col">Data rozpoczęcia</th>
+            <th scope="col">Data zakończenia</th>
+            <th scope="col">Czas pracy nad zadaniem</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasktimer %}
+        <tr>
+            <td><b>{{ forloop.counter }}</b></td>
+            <td><i>{{ task.name }}</i></td>
+            <td><i>{{ task.employee }}</i></td>
+            <td>{{ task.time_started }}</td>
+            <td>{{ task.time_ended }}</td>
+            <td>{{ task.time_elapsed }}</td>
+        </tr>            
+        {% endfor %}
+    </tbody>
+</table>
+<div>
+    <br>
+    <p><b>Łącznie:</b> {{ tasktimer|length }}</p>
+    <p><b>Łączny czas pracy:</b> {{ tasktimers_totaltime }}</p>
+</div>
+<div>
+    <br>
+    <p><b>Wygenerowano:</b> {% now "DATETIME_FORMAT" %}</p>
+</div>
+
+
+
+{% endblock %}

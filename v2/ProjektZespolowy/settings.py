@@ -38,7 +38,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 INSTALLED_APPS = [
-    'licznik_czasu',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,8 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount'
+    'allauth.socialaccount',
+    'licznik_czasu.apps.licznik_czasuConfig'
 ]
+
+AUTH_USER_MODEL = "licznik_czasu.User"
 
 # ACCOUNT_AUTHENTICATION_METHOD = 'email'
 # ACCOUNT_EMAIL_REQUIRED = True
@@ -87,6 +89,13 @@ TEMPLATES = [
     }
 ]
 
+ACCOUNT_FORMS = {
+    'login': 'licznik_czasu.forms.CustomLoginForm',
+    'signup': 'licznik_czasu.forms.CustomSignupForm',
+    'change_password': 'licznik_czasu.forms.CustomChangePasswordForm',
+    'reset_password': 'licznik_czasu.forms.CustomResetPasswordForm',
+}
+
 WSGI_APPLICATION = 'ProjektZespolowy.wsgi.application'
 
 
@@ -105,7 +114,6 @@ DATABASES = {
         'PORT': os.getenv('DATABASE_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -143,6 +151,10 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'licznik_czasu', 'static')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

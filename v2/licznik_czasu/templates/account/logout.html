@@ -5,90 +5,19 @@
 {% block head_title %}{% trans "Sign Out" %}{% endblock %}
 
 {% block content %}
-
-<head>
-    <style>
-        body {
-            background-color: white;
-        }
-
-        .logout-form {
-            height: fit-content;
-            min-height: 520px;
-            width: 400px;
-            background-color: rgba(255, 255, 255, 0.13);
-            position: absolute;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-            padding: 50px 35px;
-        }
-
-        .logout-form * {
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: 0.5px;
-            outline: none;
-            border: none;
-        }
-
-        label {
-            color: black;
-        }
-
-        button {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            width: 100%;
-            background-color: #36f;
-            color: white;
-            padding: 15px 0;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: rgb(31, 61, 145);
-            box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, .3);
-        }
-
-        .form-content {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            height: 100%;
-            min-height: 100%;
-        }
-
-        .form-content p {
-            min-height: 100%;
-            align-self: stretch;
-            margin-top: 50%;
-        }
-
-        .form-content h1 {
-            margin-bottom: 10%;
-        }
-    </style>
-</head>
-
-<body>
-    <form class="logout-form" method="post" action="{% url 'account_logout' %}">
+<div class="h-100 d-flex justify-content-center align-items-center">
+    <form method="post" action="{% url 'account_logout' %}">
         {% csrf_token %}
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <div class="form-content">
-            <h1>{% trans 'Are you sure you want to sign out?' %}</h1>
-            <button type="submit">{% trans 'Sign Out' %}</button>
+        <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded shadow-lg bg-white"
+            style="--bs-bg-opacity: .3;">
+            <h1 class="fs-1 mb-4">{% trans 'Are you sure you want to sign out?' %}</h1>
+            <button class="btn w-25 mb-3 btn-primary" type="submit">{% trans 'Sign Out' %}</button>
             <p>Jeżeli chcesz powrócić do strony gównej kliknij</p>
-            <button href="{% url 'account_email' %}">Powrót</button>
+            <a class="btn w-25 mb-3 btn-primary" href="{% url 'view_profile' %}">Powrót</a>
         </div>
     </form>
-</body>
-
+</div>
 {% endblock %}

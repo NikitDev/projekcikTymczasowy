@@ -1,0 +1,95 @@
+{% extends "account/base.html" %}
+
+{% block head_title %}Płachta Pracowników{% endblock %}
+{% load static %}
+
+{% block extra_head %}
+<script type="text/javascript">var year = "{{ year }}"; var month = "{{ month }}"</script>
+<script src="{% static 'employee-report.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container h-auto w-100 mb-3 p-5 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
+        <div class="d-flex justify-content-between mb-4">
+            <h1 class="fs-1">Płachta pracowników: {{ year }}{% if month != 0 and month %}-{{ month }}{% endif %}</h1>
+            <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'home' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+            </a>
+        </div>
+        <div class="d-flex flex-column col-lg-6 col-md-8 col-sm-12 mb-4 text-center">
+            <form id="select-form" method="POST" class="d-flex flex-column gap-2 mb-0">
+                {% csrf_token %}
+                <div class="container p-0 d-flex flex-row justify-content-between gap-2">
+                    <div class="year w-50 d-flex flex-column justify-content-between">
+                        <h4 class="mb-3">Wybierz rok</h4>
+                        <select id="year-selector" name="year-selector" class="form-select w-auto h-auto"></select>
+                    </div>
+                    <div class="month w-50 d-flex flex-column justify-content-between">
+                        <h4 class="mb-3">Wybierz miesiąc</h4>
+                        <select id="month-selector" name="month-selector" class="form-select w-auto h-auto">
+                            <option value="0">Wszystkie</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Generuj</button>
+                <button type="submit" name="generate_report" class="btn btn-primary">Generuj PDF</button>  <!-- przycisk do generowania pdf, wysyła wartość generate report -->
+            </form>
+        </div>
+        <div class="w-100 table-responsive">
+        {% if flag == "year" %}
+            <table class="table table-light overflow-hidden table-striped text-center rounded">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Imię i nazwisko</th>
+                        <th scope="col">I</th>
+                        <th scope="col">II</th>
+                        <th scope="col">III</th>
+                        <th scope="col">IV</th>
+                        <th scope="col">V</th>
+                        <th scope="col">VI</th>
+                        <th scope="col">VII</th>
+                        <th scope="col">VIII</th>
+                        <th scope="col">IX</th>
+                        <th scope="col">X</th>
+                        <th scope="col">XI</th>
+                        <th scope="col">XII</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for key, value in employee_table.items %}
+                    <tr>
+                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                        {% for time in value %}
+                        <td>{{ time }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif flag == "month" %}
+            <table class="table table-light overflow-hidden table-striped text-center rounded">
+                <thead class="table-primary">
+                    <tr id="table-header">
+                        <th scope="col">Imię i nazwisko</th>
+                        {% for day in days%}
+                            <th scope="col">{{ day|add:1 }}</th>
+                        {% endfor%}
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for key, value in employee_table.items %}
+                    <tr>
+                        <th scope="row">{{ key.first_name }} {{ key.last_name }}</th>
+                        {% for time in value %}
+                        <td>{{ time }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
