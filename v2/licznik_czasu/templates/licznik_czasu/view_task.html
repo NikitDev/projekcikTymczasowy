@@ -64,8 +64,8 @@
                 </div>
                 {% endfor %}
                 <div class="form-floating mb-3">
-                    <output class="form-control" name="task-creation-date" id="task-creation-date">{{ task.creation_date }}</output>
-                    <label for="task-creation-date">Data utworzenia</label>
+                    <output class="form-control" name="status" id="status">{{ task.status }}</output>
+                    <label for="status">Status</label>
                 </div>
                 {% if user.who_is != 'CL' or user.is_superuser %}
                     <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>

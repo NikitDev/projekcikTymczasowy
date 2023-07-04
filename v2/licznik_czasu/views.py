@@ -91,7 +91,7 @@ def view_project(request, project_id):
         host='https://taiga.webtechnika.pl'
     )
     api.auth(
-        username='Nikit',
+        username='mateusz.petkiewicz',
         password=os.getenv('PASSWORD')
     )
 
@@ -106,16 +106,19 @@ def view_project(request, project_id):
                 project = Project.objects.get(project_name=project2.slug)
                 project.employee.add(employee)
 
-    # tasks = []
+    statuses = {}
+    for j in project2.list_user_story_statuses():
+        statuses[j.id] = j.name
+
     for i in project2.list_user_stories():
         if not Task.objects.filter(task_name=i).exists():
-            Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description, project_id=project_id)
+            Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description,
+                                project_id=project_id, status=statuses[i.status])
 
     context = {
         "project": project,
         "form": form,
         "tasks": Task.objects.filter(project_id=project_id).order_by('id')
-        # "tasks": tasks
     }
     return render(request, "licznik_czasu/view_project.html", context)
 
@@ -172,7 +175,7 @@ def view_task(request, project_id, task_id):
         host='https://taiga.webtechnika.pl'
     )
     api.auth(
-        username='Nikit',
+        username='mateusz.petkiewicz',
         password=os.getenv('PASSWORD')
     )
 
