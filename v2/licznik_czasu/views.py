@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -5,7 +7,7 @@ from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from weasyprint import HTML
-from .models import Project, Task, TaskTimer, Client, Employee
+from .models import Project, Task, TaskTimer, Client, Employee, User
 from .forms import UserForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
@@ -89,11 +91,20 @@ def view_project(request, project_id):
         host='https://taiga.webtechnika.pl'
     )
     api.auth(
-        username='',
-        password=''
+        username='Nikit',
+        password=os.getenv('PASSWORD')
     )
 
     project2 = api.projects.get_by_slug(project)
+
+    for user in api.users.list():
+        if User.objects.filter(username=user.username).exists():
+            user_id = User.objects.get(username=user.username)
+            if not Project.objects.filter(employee=Employee.objects.get(user_id=user_id)).exists():
+                userr = User.objects.get(username=user.username)
+                employee = Employee.objects.get(user_id=userr.id)
+                project = Project.objects.get(project_name=project2.slug)
+                project.employee.add(employee)
 
     tasks = []
     for i in project2.list_user_stories():
