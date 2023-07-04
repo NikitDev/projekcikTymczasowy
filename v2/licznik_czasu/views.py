@@ -104,7 +104,6 @@ def client_data(request, project_id, task_id):
 @csrf_exempt
 @require_POST
 def save_view(request, project_id, task_id):
-    print("XDDDDDDD")
     if request.method == "POST":
         start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
         end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
@@ -115,6 +114,18 @@ def save_view(request, project_id, task_id):
         timer.is_active = False
         timer.save()
         request.session['start_time'] = None
+        return HttpResponse(status=200)
+
+
+def save_view_second(request, project_id, task_id):
+    if request.method == "POST":
+        start_time = timezone.datetime.fromtimestamp(float(request.session.get('start_time')))
+        end_time = timezone.datetime.fromtimestamp(float(timezone.now().timestamp()))
+        duration = end_time - start_time
+        timer = TaskTimer.objects.get(pk=request.session.get('pk'), user=request.user)
+        timer.time_ended = end_time
+        timer.time_elapsed = duration
+        timer.save()
         return HttpResponse(status=200)
 
 

@@ -57,6 +57,7 @@ $(document).ready(function() {
                     if (response.success) {
                         start_time = new Date().getTime();
                         timerInterval = setInterval(timer1, 1000);
+                        setInterval(CallAutosave, 5000);
                     }
                 });
                 flag = false;
@@ -65,7 +66,6 @@ $(document).ready(function() {
                 var urlParts = window.location.pathname.split('/');
                 project_id = urlParts[2];
                 task_id = urlParts[4];
-                console.log("OHO");
                 window.addEventListener("beforeunload", beforeUnloadHandler);
             } else {
                 // stop
@@ -83,3 +83,24 @@ $(document).ready(function() {
         });
     }
 });
+
+function CallAutosave() {
+     var csrf = $("input[name=csrfmiddlewaretoken]").val();
+     var path = window.location.pathname;
+     var pathParts = path.split('/');
+     var projectID = pathParts[2];
+     var taskID = pathParts[4];
+     $.ajax({
+        url: '/project/' + projectID + '/task/' + taskID + '/save_view_second/',
+        method: 'POST',
+        headers: {
+                'X-CSRFToken': csrf,
+        },
+        success: function(response) {
+            // Obsłuż odpowiedź od widoku Django
+        },
+        error: function(xhr, status, error) {
+            // Obsłuż błąd żądania
+        }
+    });
+}
