@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
+from taiga import TaigaAPI
 
 
 def can_access_project(request, project_id):
@@ -62,6 +63,9 @@ def view_profile(request):
     return render(request, 'account/profile.html', context)
 
 
+# def taiga_tasks():
+#
+
 @login_required
 def view_project(request, project_id):
     check_permissions = can_access_project(request, project_id)
@@ -81,10 +85,29 @@ def view_project(request, project_id):
     else:
         form = TaskForm()
 
+    api = TaigaAPI(
+        host='https://taiga.webtechnika.pl'
+    )
+    api.auth(
+        username='',
+        password=''
+    )
+
+    project2 = api.projects.get_by_slug(project)
+
+    tasks = []
+    for i in project2.list_user_stories():
+        if Task.objects.filter(task_name=i).exists():
+            tasks.append(Task.objects.get(task_name=i))
+        else:
+            tasks.append(Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description, project_id=project_id))
+
+
     context = {
         "project": project,
         "form": form,
-        "tasks": Task.objects.filter(project_id=project_id).order_by('id')
+        # "tasks": Task.objects.filter(project_id=project_id).order_by('id')
+        "tasks": tasks
     }
     return render(request, "licznik_czasu/view_project.html", context)
 
