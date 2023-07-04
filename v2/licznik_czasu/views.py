@@ -106,19 +106,16 @@ def view_project(request, project_id):
                 project = Project.objects.get(project_name=project2.slug)
                 project.employee.add(employee)
 
-    tasks = []
+    # tasks = []
     for i in project2.list_user_stories():
-        if Task.objects.filter(task_name=i).exists():
-            tasks.append(Task.objects.get(task_name=i))
-        else:
-            tasks.append(Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description, project_id=project_id))
-
+        if not Task.objects.filter(task_name=i).exists():
+            Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description, project_id=project_id)
 
     context = {
         "project": project,
         "form": form,
-        # "tasks": Task.objects.filter(project_id=project_id).order_by('id')
-        "tasks": tasks
+        "tasks": Task.objects.filter(project_id=project_id).order_by('id')
+        # "tasks": tasks
     }
     return render(request, "licznik_czasu/view_project.html", context)
 
@@ -170,6 +167,36 @@ def view_task(request, project_id, task_id):
         return check_permissions
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
+
+    api = TaigaAPI(
+        host='https://taiga.webtechnika.pl'
+    )
+    api.auth(
+        username='Nikit',
+        password=os.getenv('PASSWORD')
+    )
+
+    project_taiga = api.projects.get_by_slug(project)
+
+    tai_task = []
+
+    for task_ta in project_taiga.list_user_stories():
+        if task_ta.subject == task.task_name:
+
+            tai_task = task_ta.assigned_users
+            break
+
+    for user in api.users.list():
+        if not user.id in tai_task:
+            continue
+
+        if User.objects.filter(username=user.username).exists():
+            taiga_user = User.objects.get(username=user.username)
+            if Employee.objects.filter(user_id=taiga_user.id).exists():
+                employee_taiga = Employee.objects.get(user_id=taiga_user.id)
+                task_taiga = Task.objects.get(id=task_id)
+                task_taiga.employee.add(employee_taiga)
+
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
         queryset=project.employee, widget=forms.CheckboxSelectMultiple(), required=False)
     if request.method == 'POST':
