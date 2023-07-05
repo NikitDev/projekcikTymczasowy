@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block extra_head %}
-<script type="text/javascript">var csrfToken = "{{ csrf_token }}"</script>
+<script type="text/javascript">var csrfToken = "{{ csrf_token }}"; var taskstatus = "{{ task.status }}" </script>
 <script src="{% static 'view-project.js' %}"></script>
 {% endblock %}
 
@@ -37,6 +37,9 @@
                 <br>
                 <div>
                     <a class="btn btn-primary mb-3 justify-content-center w-100" href="{% url 'project_report' project.id %}">Raport</a>
+                </div>
+                <div>
+                    <a class="btn btn-primary mb-3 justify-content-center w-100" href="https://taiga.webtechnika.pl/project/{{ project }}/kanban">Taiga</a>
                 </div>
             </div>
             <div class="container col-lg-6 col-md-12 bg-white rounded overflow-hidden" style="height: fit-content;">
@@ -111,7 +114,7 @@
                         <p class="text-nowrap overflow-hidden text-truncate fs-4 fw-bold" style="width: 20rem;">
                             {{ task.task_name }}
                         </p>
-                        <p class="text-nowrap overflow-hidden text-truncate" style="width: 20rem;">
+                        <p class="text-nowrap overflow-hidden text-truncate" id="task_status" name="task_tatus">
                             Status: {{ task.status }}
                         </p>
                     </a>
