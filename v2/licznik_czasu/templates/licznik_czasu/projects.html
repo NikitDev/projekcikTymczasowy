@@ -1,0 +1,40 @@
+{% extends "account/base.html" %}
+
+{% block head_title %}Projects{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container h-auto justify-content-center align-items-center">
+{% if user.is_authenticated %}
+    <div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
+        <div class="container d-flex border-bottom border-black">
+            <h1>Projekty</h1>
+        </div>
+        <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
+                {% for project in projects %}
+                <a type="button" class="list-group-item list-group-item-action py-1 ripple" style="background-color: transparent;" href="{% url 'view_project' project.id %}">
+                    <p class="fw-bold" style="background-color: transparent; font-size: 26px;">
+                        {{ project.project_name }}
+                    </p>
+                    <p class="text-nowrap overflow-hidden text-truncate">
+                        Opis Projektu: {{ project.description }}
+                    </p>
+                </a>
+                {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="w-auto p-5 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
+        <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">
+            <p class="fst-italic fs-3">Jesteś obecnie wylogowany</p>
+            <br>
+            <p class="fs-5"> Aby się zalogować naciśnij przycisk poniżej</p>
+            <a type="button" class="btn w-100 mb-3 btn-primary " href="{% url 'account_login' %}">Zaloguj się</a>
+            <br>
+            <p class="fs-5">Aby stworzyć konto naciśnij przycisk poniżej</p>
+            <a type="button" class="btn w-100 btn-primary " href="{% url 'account_signup' %}">Zarejestruj się</a>
+        </div>
+    </div>
+{% endif %}
+</div>
+{% endblock %}
