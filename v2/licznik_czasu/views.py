@@ -440,7 +440,7 @@ def employee_report(request):
         for key, value in employee_table.items():
             for i in range(len(value)):
                 if value[i] == timedelta(0):
-                    employee_table[key][i] = "X"
+                    employee_table[key][i] = "-"
                 else:
                     time_seconds = employee_table[key][i].total_seconds()
                     time_hours = time_seconds // 3600

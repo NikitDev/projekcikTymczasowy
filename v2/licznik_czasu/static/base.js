@@ -6,4 +6,4 @@ function autoCloseAlerts(){
 
 $(document).ready(function(){
     autoCloseAlerts();
-})
+});

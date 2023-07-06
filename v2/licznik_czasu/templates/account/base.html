@@ -35,6 +35,12 @@
             overflow-y: auto;
             }
 
+            @media screen and (max-width: 911px) {
+                #sidebar {
+                    display: none;
+                }
+            }
+
             .sidebar-sticky {
             position: relative;
             top: 0;
@@ -67,8 +73,7 @@
 
 {% load account %}
 <header>
-    <!-- Sidebar -->
-    <nav id="sidebarMenu" class="sidebar bg-dark ">
+    <nav id="sidebar" class="sidebar bg-dark shadow d-flex flex-column">
       <div class="position-sticky">
         <div class="list-group list-group-flush mx-3 mt-4">
             {% if user.is_authenticated %}
@@ -96,11 +101,9 @@
       </div>
     </nav>
 
-
-    <!-- Navbar -->
     <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
       <div class="container-fluid justify-content-center">      
-        <a class="navbar-brand text-center justify-content-center" style="color: white" href="{% url 'home' %}">
+        <a class="navbar-brand text-center justify-content-center fw-bold" style="color: white" href="{% url 'home' %}">
           Time Tracker
         </a>
       </div>
