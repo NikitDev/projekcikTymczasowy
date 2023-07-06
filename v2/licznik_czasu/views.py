@@ -35,6 +35,10 @@ def can_access_project(request, project_id):
 
 
 def home(request):
+    return render(request, 'licznik_czasu/home.html')
+
+
+def projects(request):
     if request.user.is_anonymous:
         projects = []
     elif request.user.is_superuser:
@@ -46,8 +50,7 @@ def home(request):
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
     context = {'projects': projects}
-    return render(request, 'licznik_czasu/home.html', context)
-
+    return render(request, 'licznik_czasu/projects.html', context)
 
 def view_profile(request):
     if request.method == 'POST':
@@ -71,12 +74,24 @@ def view_profile(request):
 @login_required
 def view_project(request, project_id):
     check_permissions = can_access_project(request, project_id)
+    # lista projektów
+    if request.user.is_anonymous:
+        projects = []
+    elif request.user.is_superuser:
+        projects = Project.objects.all().order_by("id")
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(client=client_id).order_by('id')
+    else:
+        employee_id = Employee.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(employee=employee_id).order_by('id')
+
     if check_permissions:
         return check_permissions
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
+        task_form = TaskForm(request.POST, prefix='task')
+        if task_form.is_valid():
             task_name = request.POST.get('task_name')
             description = request.POST.get('description')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
@@ -85,39 +100,13 @@ def view_project(request, project_id):
         messages.warning(request, "Nie można było stworzyć nowego zadania")
         return JsonResponse({"message": "Form not valid"})
     else:
-        form = TaskForm()
+        task_form = TaskForm(prefix='task')
 
-    api = TaigaAPI(
-        host='https://taiga.webtechnika.pl'
-    )
-    api.auth(
-        username='mateusz.petkiewicz',
-        password=os.getenv('PASSWORD')
-    )
-
-    project2 = api.projects.get_by_slug(project)
-
-    for user in api.users.list():
-        if User.objects.filter(username=user.username).exists():
-            user_id = User.objects.get(username=user.username)
-            if not Project.objects.filter(employee=Employee.objects.get(user_id=user_id)).exists():
-                userr = User.objects.get(username=user.username)
-                employee = Employee.objects.get(user_id=userr.id)
-                project = Project.objects.get(project_name=project2.slug)
-                project.employee.add(employee)
-
-    statuses = {}
-    for j in project2.list_user_story_statuses():
-        statuses[j.id] = j.name
-
-    for i in project2.list_user_stories():
-        if not Task.objects.filter(task_name=i).exists():
-            Task.objects.create(task_name=i, description=project2.get_userstory_by_ref(i.ref).description,
-                                project_id=project_id, status=statuses[i.status])
 
     context = {
+        "projects": projects,
         "project": project,
-        "form": form,
+        "form": task_form,
         "tasks": Task.objects.filter(project_id=project_id).order_by('id')
     }
     return render(request, "licznik_czasu/view_project.html", context)
@@ -233,6 +222,8 @@ def view_task(request, project_id, task_id):
         form2 = TaskEmployeeForm(instance=task)
 
     context = {
+        "project": project,
+        "tasks": Task.objects.filter(project_id=project_id).order_by('id'),
         "form": form,
         "form2": form2,
         "task": task,
@@ -263,6 +254,18 @@ def project_report(request, project_id):
         messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect("view_project", project_id=project_id)
 
+    # lista projektów
+    if request.user.is_anonymous:
+        projects = []
+    elif request.user.is_superuser:
+        projects = Project.objects.all().order_by("id")
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(client=client_id).order_by('id')
+    else:
+        employee_id = Employee.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(employee=employee_id).order_by('id')
+
     task_filter = request.POST.get('task_filter', None) # nazwa wybranego filtra zadania
     employee_filter = request.POST.get('employee_filter', None) # nazwa wybranego filtra pracownika
 
@@ -285,6 +288,7 @@ def project_report(request, project_id):
 
     context = {
         'project': project,
+        'projects': projects,
         'time_filters': time_filters,
         'task_filter': task_filter,
         'employee_filter': employee_filter,
@@ -376,6 +380,7 @@ def project_report(request, project_id):
             context = {
                 'time_filters': time_filters,
                 'project': project,
+                'projects': projects,
                 'tasks': tasks,
                 'tasktimer': tasktimers,
                 'time_filter': selected_time_filter,

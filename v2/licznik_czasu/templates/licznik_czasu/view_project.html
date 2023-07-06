@@ -6,44 +6,49 @@
 {% block extra_head %}
 <script type="text/javascript">var csrfToken = "{{ csrf_token }}"; var taskstatus = "{{ task.status }}" </script>
 <script src="{% static 'view-project.js' %}"></script>
+
+<style>
+</style>
 {% endblock %}
 
 {% block content %}
-
-<div>
-    <div class="container h-auto w-100 mb-3 p-5 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
-        <div class="d-flex justify-content-between mb-4">
-            <h1 class="fs-1">Projekt id: {{ project.id }}</h1>
-            <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'home' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
-                </svg>
+<div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
+    <div class="container d-flex border-bottom border-black">
+        <h1>Projekty</h1>
+    </div>
+    <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
+            {% for project in projects %}
+            <a type="button" class="list-group-item list-group-item-action py-1 ripple" style="background-color: transparent;" href="{% url 'view_project' project.id %}">
+                <p class="fw-bold" style="background-color: transparent; font-size: 26px;">
+                    {{ project.project_name }}
+                </p>
+                <p class="text-nowrap overflow-hidden text-truncate">
+                    Opis Projektu: {{ project.description }}
+                </p>
             </a>
-        </div>
-        <div class="container d-flex row mb-5">
-            <div class="col-lg-6 col-md-12">
-                <div class="form-floating mb-3">
-                    <output class="form-control" name="project-name" id="project-name">{{ project.project_name }}</output>
-                    <label for="project-name">Nazwa projektu</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <output class="form-control" name="project-client" id="project-client">{{ project.client }}</output>
-                    <label for="project-client">Klient</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <output class="form-control" name="project-description" id="project-description" style="height: fit-content; overflow-wrap: break-word;">{{ project.description }}</output>
-                    <label for="project-description">Opis projektu</label>
-                </div>
-                <br>
+            {% endfor %}
+    </div>
+</div>
+
+<div style="margin-left: 550px;">
+    <div class="container w-auto d-flex flex-column" >
+        <div class="container d-flex row mb-5 border border-black">
+            <div class="col-lg-6 col-md-12 mx-auto p-2">
                 <div>
-                    <a class="btn btn-primary mb-3 justify-content-center w-100" href="{% url 'project_report' project.id %}">Raport</a>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-name" id="project-name"><b>ID projektu:</b> {{ project.id }}</output>
                 </div>
                 <div>
-                    <a class="btn btn-primary mb-3 justify-content-center w-100" href="https://taiga.webtechnika.pl/project/{{ project }}/kanban">Taiga</a>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-name" id="project-name"><b>Nazwa projektu:</b> {{ project.project_name }}</output>
+                </div>
+                <div>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-client" id="project-client"><b>Klient:</b> {{ project.client }}</output>
+                </div>
+                <div>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-description" id="project-description" style="height: fit-content; overflow-wrap: break-word;"><b>Opis projektu:</b> {{ project.description }}</output>
                 </div>
             </div>
-            <div class="container col-lg-6 col-md-12 bg-white rounded overflow-hidden" style="height: fit-content;">
-                <table class="table table-striped table-hover bg-white">
+            <div class="container col-lg-6 col-md-12 bg-transparent overflow-hidden" style="height: fit-content;">
+                <table class="table table-striped table-hover bg-transparent border-black mt-2">
                     <thead>
                         <tr>
                             <th class="text-center" colspan="3">Pracownicy</th>
@@ -66,11 +71,19 @@
                 </table>
             </div>
         </div>
-        <div class="d-flex col justify-content-between">
+        <div class="container d-flex row mb-5">
+            <div class="col">
+                <a class="btn btn-dark mb-3 justify-content-center d-flex w-100 fw-bold" href="{% url 'project_report' project.id %}">Raport</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-dark mb-3 justify-content-center d-flex w-100 fw-bold" href="https://taiga.webtechnika.pl/project/{{ project }}/kanban">Taiga</a>
+            </div>
+        </div>
+        <div class="d-flex col justify-content-between border-bottom border-black">
             <h1 class="">Zadania</h1>
             {% if user.is_superuser or user.who_is == "EM" %}
-            <button id="myInput" type="button" class="btn btn-primary mb-3 text-center" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+            <button id="myInput" type="button" class="btn btn-dark mb-3 text-center" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-plus" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                 </svg>
             </button>
@@ -99,8 +112,8 @@
                             {% endfor %}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                            <button type="submit" class="btn btn-primary">Zapisz</button>
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Zamknij</button>
+                            <button type="submit" name="submit_task" class="btn fw-bold" style="background-color: #4ac900; color: white">Zapisz</button>
                         </div>
                     </form>
                 </div>
@@ -108,13 +121,13 @@
         </div>
         <div class="container mt-5">
             <section>
-                <div id="task-grid" class="row row-cols-auto d-flex justify-content-center gap-4">
+                <div id="task-grid" class="row d-flex justify-content-center gap-3">
                     {% for task in tasks %}
-                    <a type="button" class="shadow text-decoration-none rounded" href="{% url 'view_task' project.id task.id %}" style="background-color: #0b5394; color: #e7e5e4;">
-                        <p class="text-nowrap overflow-hidden text-truncate fs-4 fw-bold" style="width: 20rem;">
-                            {{ task.task_name }}
+                    <a type="button" class="shadow text-decoration-none" href="{% url 'view_task' project.id task.id %}" style="background-color: #707070; color: white">
+                        <p class="text-wrap overflow-hidden text-truncate fs-4 fw-bold">
+                            #{{ forloop.counter }} | {{ task.task_name }}
                         </p>
-                        <p class="text-nowrap overflow-hidden text-truncate" id="task_status" name="task_tatus">
+                        <p class="ms-5 {% if task.status == 'Done' %} green {% elif task.status == 'Ready' %} red {% elif task.status == 'Code review' %} yellow {% elif task.status == 'In progress' %} orange {% elif task.status == 'Ready for test' %} darkyellow {% endif %}" id="task_status" name="task_tatus">
                             Status: {{ task.status }}
                         </p>
                     </a>

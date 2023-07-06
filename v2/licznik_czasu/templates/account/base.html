@@ -13,63 +13,104 @@
     <title>{% block head_title %}{% endblock %}</title>
     {% block extra_head %}
     {% endblock %}
+    <style>
+        body {
+            background-color: #fbfbfb;
+            }
+            @media (min-width: 991.98px) {
+            main {
+                padding-left: 10px;
+            }
+            }
+
+            .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 50px 0 0;
+            box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+            width: 240px;
+            z-index: 600;
+            overflow-y: auto;
+            }
+
+            .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 48px);
+            padding-top: 0.5rem;
+            overflow-x: hidden;
+            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        }
+        .green {
+            color: rgba(1, 255, 1, 0.678);
+        }
+        .red {
+            color: rgb(255, 0, 0);
+        }
+        .yellow {
+            color: yellow;
+        }
+        .gray {
+            color: rgb(90, 90, 90);
+        }
+        .orange {
+            color: orange;
+        }
+        .darkyellow {
+            color: rgba(218, 218, 5, 0.904);
+        }
+
+    </style>
 </head>
 
 {% load account %}
-
-<body style="padding-top: 100px; background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%);">
-    {% block body %}
-    <nav class="navbar navbar-expand-sm fixed-top bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="pb-2 navbar-brand">Licznik czasu</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'home' %}">Strona Główna</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        {% if user.is_superuser %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'employee_report' %}">{% trans "Płachta pracowników" %}</a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">{% trans "Synchronizuj z Taigą" %}</a>
-                        </li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav" style="height: 65px;">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle rounded" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" style="background-color: #e3e7e6;">
-                            {% if user.is_authenticated %}
-                                Zalogowano jako <b>{% user_display user %}</b>
-                                <br>Konto
-                                {% if user.is_superuser %}
-                                    <b>Superuser</b>
-                                    {% else %}
-                                    <b>{{ user.get_who_is_display }}</b>
-                                {% endif %}
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu dropdown-center" style="background-color: #e3e7e6;">
-                            <li><a class="dropdown-item" href="{% url 'view_profile' %}">{% trans "Profil" %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>
-                        </ul>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
+<header>
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="sidebar bg-dark ">
+      <div class="position-sticky">
+        <div class="list-group list-group-flush mx-3 mt-4">
+            {% if user.is_authenticated %}
+            <a class="list-group-item list-group-item-action ripple text-center" style="color:white; background-color: transparent;">
+                Witaj, <b>{% user_display user %}</b>
+                <br>Konto
+                {% if user.is_superuser %}
+                    <b>Superuser</b>
+                    {% else %}
+                    <b>{{ user.get_who_is_display }}</b>
+                    </a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'projects' %}" class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" aria-current="true">Projekty</a>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'employee_report' %}">{% trans "Płachta pracowników" %}</a>
+                {% endif %}
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" >{% trans "Synchronizuj z Taigą" %}</a>
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'view_profile' %}">{% trans "Profil" %}</a>
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+            {% endif %}
         </div>
+      </div>
     </nav>
+
+
+    <!-- Navbar -->
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
+      <div class="container-fluid justify-content-center">      
+        <a class="navbar-brand text-center justify-content-center" style="color: white" href="{% url 'home' %}">
+          Time Tracker
+        </a>
+      </div>
+    </nav>
+
+</header>
+  
+
+<body style="padding-top: 100px; background: rgb(235, 235, 235);">
+    {% block body %}
     {% block content %}
     {% endblock %}
     {% endblock %}

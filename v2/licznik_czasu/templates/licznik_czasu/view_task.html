@@ -11,25 +11,25 @@
 {% endblock %}
 
 {% block content %}
-<div>
-    <div class="container h-auto w-auto p-5 mb-3 d-flex flex-column rounded shadow-lg bg-white" style="--bs-bg-opacity: .3; flex-basis: 100%">
-        <div class="mb-4 d-flex justify-content-between">
-            <h1 class="fs-1">Task id: {{ task.id }}</h1>
-            <div class="d-flex flex-row gap-4">
-                {% if user.is_superuser or user.who_is == "EM" %}
-                <button type="button" class="btn btn-danger mb-3 pt-2 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#deleteTaskModal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                    </svg>
-                </button>
-                {% endif %}
-                <a class="btn btn-primary mb-3 pt-2 d-flex align-items-center" href="{% url 'view_project' project_id %}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
+<div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
+    <div class="container d-flex border-bottom border-black">
+        <a href="{% url 'view_project' project_id %}" class="text-decoration-none" style="color: black" ><h1>{{ project }}</h1></a>
+    </div>
+    <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
+            {% for task in tasks %}
+            <a type="button" class="list-group-item list-group-item-action py-1 ripple" style="background-color: transparent;" href="{% url 'view_task' project.id task.id %}">
+                <p class="fw-bold" style="background-color: transparent; font-size: 26px;">
+                    {{ task.task_name }}
+                </p>
+                <p class="{% if task.status == 'Done' %} green {% elif task.status == 'Ready' %} red {% elif task.status == 'Code review' %} yellow {% elif task.status == 'In progress' %} orange {% elif task.status == 'Ready for test' %} darkyellow {% endif %}" id="task_status" name="task_tatus">
+                    Status: {{ task.status }}
+                </p>
+            </a>
+            {% endfor %}
+    </div>
+</div>
+<div style="margin-left: 550px;">
+    <div class="container w-100 d-flex flex-column border border-black" >
 <!--        Modal delete task-->
         <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">\
@@ -44,35 +44,28 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                        <button type="submit" class="btn btn-danger">Usuń</button>
+                        <button type="submit" name="submit_task_delete" class="btn btn-danger">Usuń</button>
                     </div>
                 </form>
             </div>
         </div>
         <div class="container d-flex row mb-5">
-            <form id="task-info-form" method="POST" class="col-lg-6 col-md-12">
-                {% csrf_token %}
-                {% for field in form %}
-                {% if field.errors %}
+            <div class="col-lg-6 col-md-12 mx-auto p-2">
                 <div>
-                    {{ field.errors }}
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-name" id="project-name"><b>ID zadania:</b> {{ task.id }}</output>
                 </div>
-                {% endif %}
-                <div class="form-floating mb-3">
-                    {{ field }}
-                    {{ field.label_tag }}
+                <div>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-name" id="project-name"><b>Nazwa zadania:</b> {{ task.task_name }}</output>
                 </div>
-                {% endfor %}
-                <div class="form-floating mb-3">
-                    <output class="form-control" name="status" id="status">{{ task.status }}</output>
-                    <label for="status">Status</label>
+                <div>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-description" id="project-description" style="height: fit-content; overflow-wrap: break-word;"><b>Opis:</b> {{ task.description }}</output>
                 </div>
-                {% if user.who_is != 'CL' or user.is_superuser %}
-                    <button class="btn btn-primary mb-3 align-self-end w-100" type="submit" style="height: fit-content;">Zapisz informacje</button>
-                {% endif %}
-            </form>
-            <div id="employee-table" class="col-lg-6 col-md-12 rounded bg-white overflow-hidden" style="height: fit-content;">
-                <table class="table table-striped table-hover table-white">
+                <div>
+                    <output class="form-control" style="background-color: transparent; border:none" name="project-client" id="project-client"><b>Status:</b> {{ task.status }}</output>
+                </div>
+            </div>
+            <div id="employee-table" class="container col-lg-6 col-md-12 bg-transparent overflow-hidden" style="height: fit-content;">
+                <table class="table table-striped table-hover bg-transparent border-black mt-2">
                     <thead>
                         <tr>
                             <th class="text-center" colspan="3">Pracownicy</th>
@@ -94,7 +87,7 @@
                     </tbody>
                 </table>
                 {% if user.is_superuser or user.who_is == "EM" %}
-                <button type="button" class="btn btn-primary mb-3 w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">
+                <button type="button" class="btn btn-dark mb-3 w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">
                     Dodaj pracowników
                 </button>
                 {% endif %}
@@ -115,30 +108,36 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                            <button type="submit" class="btn btn-primary">Zapisz</button>
+                            <button type="submit" name="submit_employee" class="btn btn-primary">Zapisz</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <form method="POST" class="container row">
+    </div>
+    <div>
+        <form method="POST" class="container row justify-content-center mt-5">
             {% csrf_token %}
             <div class="col-lg-6 col-md-12 justify-content-center">
                 <div class="d-flex justify-content-center">
                     {% if user.who_is == "EM" %}
-                    <h1>Rozpocznij sesje</h1>
+                    <h1>Rozpocznij sesję</h1>
                     {% else %}
                     <h1>Status zadania</h1>
                     {% endif %}
                 </div>
-                <div class="d-flex mb-3 rounded shadow-lg bg-white justify-content-center">
+                <div class="d-flex mb-3 justify-content-center">
                     {% if user.who_is == "EM" %}
-                    <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>
-                    <button class="w-50 btn btn-primary" type="button" id="timer_button" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"></button>
+                    <p class="text-center w-50 me-0 mb-0 fs-2" id="timer-display">00:00:00</p>                    
                     {% else %}
                     <div class="text-center fs-4" id="display"></div>
                     {% endif %}
                 </div>
+                {% if user.who_is == "EM" %}
+                <div class="d-flex mb-3 justify-content-center">
+                    <button class="w-50 btn btn-dark" type="button" id="timer_button"></button>    
+                </div>
+                {% endif %}
             </div>
         </form>
     </div>
