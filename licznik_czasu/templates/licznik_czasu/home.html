@@ -4,41 +4,18 @@
 
 {% block content %}
 {% csrf_token %}
-<div class="container h-auto justify-content-center align-items-center">
+<div>
 {% if user.is_authenticated %}
-    <div class="p-4 pb-0 pt-4 mb-4 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3;">
-        <div class="container d-flex justify-content-center align-items-center">
-            <h1>Projekty użytkownika</h1>
-        </div>
-        <section>
-            <div class="d-flex row row-cols-auto justify-content-center gap-5 pt-5 pb-5">
-                {% for project in projects %}
-                <a type="button" class="text-decoration-none rounded shadow" href="{% url 'view_project' project.id %}"
-                    style="min-width: 30%; background-color: #0b5394; color: #e7e5e4">
-                    <p class="fs-4 fw-bold text-truncate text-nowrap overflow-hidden" style="width: 20rem;">
-                        {{ project.project_name }}
-                    </p>
-                    <p>
-                        Klient: {{ project.client_id }}
-                    </p>
-                    <p class="text-nowrap overflow-hidden text-truncate" style="width: 20rem;">
-                        Opis Projektu:  {{ project.description }}
-                    </p>
-                </a>
-                {% endfor %}
-            </div>
-        </section>
-    </div>
 {% else %}
     <div class="w-auto p-5 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
         <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">
             <p class="fst-italic fs-3">Jesteś obecnie wylogowany</p>
             <br>
             <p class="fs-5"> Aby się zalogować naciśnij przycisk poniżej</p>
-            <a type="button" class="btn w-100 mb-3 btn-primary " href="{% url 'account_login' %}">Zaloguj się</a>
+            <a type="button" class="btn w-100 mb-3 btn-dark " href="{% url 'account_login' %}">Zaloguj się</a>
             <br>
             <p class="fs-5">Aby stworzyć konto naciśnij przycisk poniżej</p>
-            <a type="button" class="btn w-100 btn-primary " href="{% url 'account_signup' %}">Zarejestruj się</a>
+            <a type="button" class="btn w-100 btn-dark " href="{% url 'account_signup' %}">Zarejestruj się</a>
         </div>
     </div>
 {% endif %}

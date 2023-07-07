@@ -41,7 +41,7 @@ class Task(models.Model):
     creation_date = models.DateField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
     employee = models.ManyToManyField(Employee, blank=True)
-    status = models.TextField(default="New"),
+    status = models.TextField(default="New")
     taiga_task_id = models.IntegerField(null=True)
 
     def __str__(self):

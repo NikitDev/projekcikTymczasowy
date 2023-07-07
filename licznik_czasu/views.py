@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -5,7 +7,8 @@ from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from weasyprint import HTML
-from .models import Project, Task, TaskTimer, Client, Employee
+
+from .models import Project, Task, TaskTimer, Client, Employee, User
 from .forms import UserForm, TaskForm, TaskEmployeeForm
 from django import forms
 from django.utils import timezone
@@ -13,6 +16,7 @@ from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
 from .tasks import get_taiga
+
 
 
 def can_access_project(request, project_id):
@@ -33,9 +37,12 @@ def can_access_project(request, project_id):
 
 
 def home(request):
+    return render(request, 'licznik_czasu/home.html')
+
+
+def projects(request):
     if not request.user.is_anonymous:
         get_taiga.delay(request.user.id, request.user.first_name, request.user.last_name)
-
     if request.user.is_anonymous:
         projects = []
     elif request.user.is_superuser:
@@ -65,10 +72,23 @@ def view_profile(request):
     }
     return render(request, 'account/profile.html', context)
 
-
+  
 @login_required
 def view_project(request, project_id):
     check_permissions = can_access_project(request, project_id)
+    # lista projektów
+    if request.user.is_anonymous:
+        projects = []
+    elif request.user.is_superuser:
+        projects = Project.objects.all().order_by("id")
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(client=client_id).order_by('id')
+    else:
+        employee_id = Employee.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(employee=employee_id).order_by('id')
+
+
     if check_permissions:
         return check_permissions
     project = get_object_or_404(Project, pk=project_id)
@@ -86,6 +106,7 @@ def view_project(request, project_id):
         form = TaskForm()
 
     context = {
+        "projects": projects,
         "project": project,
         "form": form,
         "tasks": Task.objects.filter(project_id=project_id).order_by('id')
@@ -174,6 +195,8 @@ def view_task(request, project_id, task_id):
         form2 = TaskEmployeeForm(instance=task)
 
     context = {
+        "project": project,
+        "tasks": Task.objects.filter(project_id=project_id).order_by('id'),
         "form": form,
         "form2": form2,
         "task": task,
@@ -204,6 +227,18 @@ def project_report(request, project_id):
         messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect("view_project", project_id=project_id)
 
+    # lista projektów
+    if request.user.is_anonymous:
+        projects = []
+    elif request.user.is_superuser:
+        projects = Project.objects.all().order_by("id")
+    elif request.user.who_is == "CL":
+        client_id = Client.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(client=client_id).order_by('id')
+    else:
+        employee_id = Employee.objects.get(user_id=request.user.id)
+        projects = Project.objects.filter(employee=employee_id).order_by('id')
+
     task_filter = request.POST.get('task_filter', None) # nazwa wybranego filtra zadania
     employee_filter = request.POST.get('employee_filter', None) # nazwa wybranego filtra pracownika
 
@@ -226,6 +261,7 @@ def project_report(request, project_id):
 
     context = {
         'project': project,
+        'projects': projects,
         'time_filters': time_filters,
         'task_filter': task_filter,
         'employee_filter': employee_filter,
@@ -317,6 +353,7 @@ def project_report(request, project_id):
             context = {
                 'time_filters': time_filters,
                 'project': project,
+                'projects': projects,
                 'tasks': tasks,
                 'tasktimer': tasktimers,
                 'time_filter': selected_time_filter,
@@ -376,7 +413,7 @@ def employee_report(request):
         for key, value in employee_table.items():
             for i in range(len(value)):
                 if value[i] == timedelta(0):
-                    employee_table[key][i] = "X"
+                    employee_table[key][i] = "-"
                 else:
                     time_seconds = employee_table[key][i].total_seconds()
                     time_hours = time_seconds // 3600
