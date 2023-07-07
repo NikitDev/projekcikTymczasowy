@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container h-auto w-auto d-flex flex-column" style="--bs-bg-opacity: .3; flex-basis: 100%; margin-left:260px">
+    <div class="container h-auto w-auto d-flex flex-column" style="--bs-bg-opacity: .3; flex-basis: 100%">
         <div class="d-flex justify-content-between mb-4">
             <h1 class="fs-1">Płachta pracowników: {{ year }}{% if month != 0 and month %}-{{ month }}{% endif %}</h1>
         </div>
@@ -85,7 +85,6 @@
                 </tbody>
             </table>
         {% endif %}
-        <div>{{time}}</div>
         </div>
     </div>
 {% endblock %}

@@ -8,7 +8,7 @@
 {% if user.is_authenticated %}
     <div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
         <div class="container d-flex border-bottom border-black">
-            <h1>Projekty</h1>
+            <h1>Projekty ({{ projects|length }})</h1>
         </div>
         <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
                 {% for project in projects %}
@@ -38,7 +38,6 @@
             <p style="color:gray; font-size: 30px;">Nie wybrano żadnego projektu.</p>
         </div>
     </div>
-
 {% else %}
     <div class="w-auto p-5 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
         <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">

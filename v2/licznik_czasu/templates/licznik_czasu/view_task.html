@@ -13,7 +13,7 @@
 {% block content %}
 <div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
     <div class="container d-flex border-bottom border-black">
-        <a href="{% url 'view_project' project_id %}" class="text-decoration-none" style="color: black" ><h1>{{ project }}</h1></a>
+        <a href="{% url 'view_project' project_id %}" class="text-decoration-none" style="color: black" ><h2>{{ project }}   ({{ tasks|length }})</h2></a>
     </div>
     <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
             {% for task in tasks %}
@@ -28,7 +28,7 @@
             {% endfor %}
     </div>
 </div>
-<div style="margin-left: 550px;">
+<div style="margin-left: 300px;">
     <div class="container w-100 d-flex flex-column border border-black" >
 <!--        Modal delete task-->
         <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">

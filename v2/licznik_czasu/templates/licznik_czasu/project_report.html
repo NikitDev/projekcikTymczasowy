@@ -3,15 +3,11 @@
 {% block head_title %}Projekt: {{ project.id }}{% endblock %}
 {% load static %}
 
-
 {% block extra_head %}
 <script type="text/javascript">var csrfToken = "{{ csrf_token }}"</script>
 <script src="{% static 'report-filter.js' %}"></script>
 {% endblock %}
 
-
-
-</style>
 {% block content %}
 <div class="sidebar" style="left:240px; width: 300px; padding-top: 4%; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
     <div class="container d-flex border-bottom border-black">
@@ -32,7 +28,7 @@
 </div>
     <form method="POST">
         {% csrf_token %}
-        <div class="container w-auto d-flex flex-column" style="--bs-bg-opacity: .3; flex-basis: 100%; margin-left: 550px;">
+        <div class="container w-auto d-flex flex-column" style="--bs-bg-opacity: .3; flex-basis: 100%; margin-left: 300px;">
             <div class="d-flex justify-content-between">
                 <h1 class="fs-1">Raport projektu: {{ project.project_name }}</h1>
                 <a class="btn btn-dark mb-3 pt-2 d-flex align-items-center" href="{% url 'view_project' project.id %}">
@@ -69,10 +65,7 @@
                     </div>
                     <div id="hidden_div" style="display: none" class="row justify-content-center gap-3 mb-3">
                         hidden div
-
-
                     </div>
-
                 </div>
                 <div class="col-lg-6 col-md-12">
                     <label class="h2 d-flex justify-content-center" for="filters">Filtrowanie:</label>
@@ -89,7 +82,6 @@
                                 {% for task in tasks %}
                                     <option value="{{ task.task_name }}" >{{ task.task_name }}</option>
                                 {% endfor %}
-
                             </select>
                         </div>
                         <div id="employeefilter" class="row d-flex justify-content-center mb-3">
@@ -105,8 +97,6 @@
                                     <option value="{{ employee.user }}" >{{ employee.user }}</option>
                                 {% endfor %}
                             </select>
-
-
                         </div>
                     </div>
                 </div>
@@ -115,7 +105,6 @@
                     <button class="btn btn-dark mb-3 align-self-end w-50" type="submit" name="generate_report" style="height: fit-content;">Generuj PDF</button>
                 </div>
             </div>
-
             {% if flag == False %}
             <div class="container d-flex row mb-5">
                 <div class="container rounded bg-white">
