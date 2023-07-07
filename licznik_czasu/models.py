@@ -29,6 +29,7 @@ class Project(models.Model):
     description = models.TextField(null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     employee = models.ManyToManyField(Employee, blank=True)
+    taiga_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.project_name
@@ -41,6 +42,7 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default='')
     employee = models.ManyToManyField(Employee, blank=True)
     status = models.TextField(default="New")
+    taiga_task_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.task_name

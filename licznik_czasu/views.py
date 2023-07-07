@@ -7,6 +7,7 @@ from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from weasyprint import HTML
+
 from .models import Project, Task, TaskTimer, Client, Employee, User
 from .forms import UserForm, TaskForm, TaskEmployeeForm
 from django import forms
@@ -14,7 +15,8 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
-from taiga import TaigaAPI
+from .tasks import get_taiga
+
 
 
 def can_access_project(request, project_id):
@@ -39,6 +41,8 @@ def home(request):
 
 
 def projects(request):
+    if not request.user.is_anonymous:
+        get_taiga.delay(request.user.id, request.user.first_name, request.user.last_name)
     if request.user.is_anonymous:
         projects = []
     elif request.user.is_superuser:
@@ -49,17 +53,9 @@ def projects(request):
     else:
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
-
-
-    api = TaigaAPI(
-        host='https://taiga.webtechnika.pl'
-    )
-    api.auth(
-        username='mateusz.petkiewicz',
-        password=os.getenv('PASSWORD')
-    )
     context = {'projects': projects}
-    return render(request, 'licznik_czasu/projects.html', context)
+    return render(request, 'licznik_czasu/home.html', context)
+
 
 def view_profile(request):
     if request.method == 'POST':
@@ -76,6 +72,7 @@ def view_profile(request):
     }
     return render(request, 'account/profile.html', context)
 
+  
 @login_required
 def view_project(request, project_id):
     check_permissions = can_access_project(request, project_id)
@@ -91,12 +88,13 @@ def view_project(request, project_id):
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
 
+
     if check_permissions:
         return check_permissions
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
-        task_form = TaskForm(request.POST, prefix='task')
-        if task_form.is_valid():
+        form = TaskForm(request.POST)
+        if form.is_valid():
             task_name = request.POST.get('task_name')
             description = request.POST.get('description')
             task = Task.objects.create(task_name=task_name, description=description, project_id=project_id)
@@ -105,12 +103,12 @@ def view_project(request, project_id):
         messages.warning(request, "Nie można było stworzyć nowego zadania")
         return JsonResponse({"message": "Form not valid"})
     else:
-        task_form = TaskForm(prefix='task')
+        form = TaskForm()
 
     context = {
         "projects": projects,
         "project": project,
-        "form": task_form,
+        "form": form,
         "tasks": Task.objects.filter(project_id=project_id).order_by('id')
     }
     return render(request, "licznik_czasu/view_project.html", context)

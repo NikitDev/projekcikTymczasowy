@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'licznik_czasu.apps.licznik_czasuConfig'
+    'licznik_czasu.apps.licznik_czasuConfig',
+    'celery',
 ]
 
 AUTH_USER_MODEL = "licznik_czasu.User"
@@ -160,3 +162,9 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# CELERY
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_TIMEZONE = 'UTC'

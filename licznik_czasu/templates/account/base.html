@@ -114,6 +114,62 @@
   
 <body style="padding-top: 100px; background: rgb(235, 235, 235);">
     {% block body %}
+=======
+</head>
+
+{% load account %}
+
+<body style="padding-top: 100px; background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(138,25,58,1) 35%, rgba(0,212,255,1) 100%);">
+    {% block body %}
+    <nav class="navbar navbar-expand-sm fixed-top bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="pb-2 navbar-brand">Licznik czasu</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'home' %}">Strona Główna</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'employee_report' %}">{% trans "Płachta pracowników" %}</a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav" style="height: 65px;">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle rounded" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" style="background-color: #e3e7e6;">
+                            {% if user.is_authenticated %}
+                                Zalogowano jako <b>{% user_display user %}</b>
+                                <br>Konto
+                                {% if user.is_superuser %}
+                                    <b>Superuser</b>
+                                    {% else %}
+                                    <b>{{ user.get_who_is_display }}</b>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-center" style="background-color: #e3e7e6;">
+                            <li><a class="dropdown-item" href="{% url 'view_profile' %}">{% trans "Profil" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>
+                        </ul>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     {% block content %}
     {% endblock %}
     {% endblock %}
