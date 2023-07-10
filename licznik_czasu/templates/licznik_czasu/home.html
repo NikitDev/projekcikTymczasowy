@@ -8,26 +8,12 @@
 {% if user.is_authenticated %}
 <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
     <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">
-    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <form id="taiga-form" method="POST">
                 {% csrf_token %}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Zaloguj</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {% for field in form %}
-                        {% if field.errors %}
-                        <div>
-                            {{ field.errors }}
-                        </div>
-                        {% endif %}
-                        <div class="form-floating mb-3">
-                            {{ field }}
-                            {{ field.label_tag }}
-                        </div>
-                    {% endfor %}
+                <div>Zaloguj</div>
+                <div>
+                    {{ form.as_p }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-dark fw-bold" data-bs-dismiss="modal">Zamknij</button>
@@ -35,7 +21,6 @@
                 </div>
             </form>
         </div>
-    </div>
 </div>
 </div>
 {% else %}

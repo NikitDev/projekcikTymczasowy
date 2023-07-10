@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from weasyprint import HTML
 
 from .models import Project, Task, TaskTimer, Client, Employee, User
-from .forms import UserForm, TaskForm, TaskEmployeeForm
+from .forms import UserForm, TaskForm, TaskEmployeeForm, CustomTaigaLoginForm
 from django import forms
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
@@ -36,7 +36,18 @@ def can_access_project(request, project_id):
 
 
 def home(request):
-    return render(request, 'licznik_czasu/home.html')
+    if request.method == 'POST':
+        form = CustomTaigaLoginForm(request.POST)
+        if form.is_valid():
+            login = form.cleaned_data['login']
+            haslo = form.cleaned_data['haslo']
+    else:
+        form = CustomTaigaLoginForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'licznik_czasu/home.html', context)
 
 
 def projects(request):

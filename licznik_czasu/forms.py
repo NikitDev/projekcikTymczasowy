@@ -81,8 +81,11 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
 
 
-class CustomTaigaLoginForm(forms.ModelForm):
-    username = forms.TextInput()
-    username.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'login'})
-    password = forms.PasswordInput()
-    password.widget = forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'password'})
+class CustomTaigaLoginForm(forms.Form):
+    # username = forms.TextInput()
+    # username.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'login'})
+    # password = forms.TextInput()
+    # password.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'password'})
+    login = forms.CharField(label="Login")
+    haslo = forms.CharField(label="Haslo", widget=forms.PasswordInput)
+
