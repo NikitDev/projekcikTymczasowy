@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'licznik_czasu.apps.licznik_czasuConfig'
     'licznik_czasu.apps.licznik_czasuConfig',
     'celery',
 ]

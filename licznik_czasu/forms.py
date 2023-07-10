@@ -79,3 +79,10 @@ class TaskEmployeeForm(forms.ModelForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
+
+
+class CustomTaigaLoginForm(forms.ModelForm):
+    username = forms.TextInput()
+    username.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'login'})
+    password = forms.PasswordInput()
+    password.widget = forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'password'})

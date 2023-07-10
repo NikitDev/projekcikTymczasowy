@@ -15,8 +15,7 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
-from .tasks import get_taiga
-
+from .tasks import get_taiga, add_periodic_tasks
 
 
 def can_access_project(request, project_id):
@@ -41,8 +40,6 @@ def home(request):
 
 
 def projects(request):
-    if not request.user.is_anonymous:
-        get_taiga.delay(request.user.id, request.user.first_name, request.user.last_name)
     if request.user.is_anonymous:
         projects = []
     elif request.user.is_superuser:
@@ -54,7 +51,7 @@ def projects(request):
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
     context = {'projects': projects}
-    return render(request, 'licznik_czasu/home.html', context)
+    return render(request, 'licznik_czasu/projects.html', context)
 
 
 def view_profile(request):
@@ -87,7 +84,6 @@ def view_project(request, project_id):
     else:
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
-
 
     if check_permissions:
         return check_permissions
@@ -443,3 +439,14 @@ def employee_report(request):
     else:
         context = {}
     return render(request, 'licznik_czasu/employee_report.html', context)
+
+
+def taiga_login(request, username, password):
+    if not request.user.is_anonymous:
+        add_periodic_tasks(
+            user_id=request.user.id,
+            user_first_name=request.user.first_name,
+            user_last_name=request.user.last_name,
+            username=username,
+            password=password
+        )

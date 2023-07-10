@@ -1,18 +1,35 @@
-from celery import shared_task
-from taiga import TaigaAPI
 import os
+
+from celery import shared_task, Celery
+from taiga import TaigaAPI
 
 from .models import Project, Employee, Task, User
 
+app = Celery('ProjektZespolowy')
+
+
+def add_periodic_tasks(**kwargs):
+    app.add_periodic_task(
+        20,
+        get_taiga.s(
+            kwargs['user_id'],
+            kwargs['user_first_name'],
+            kwargs['user_last_name'],
+            kwargs['username'],
+            kwargs['password']
+        ),
+        name='get taiga data'
+    )
+
 
 @shared_task(serializer='json')
-def get_taiga(user_id, user_first_name, user_last_name):
+def get_taiga(user_id, user_first_name, user_last_name, username, password):
     api = TaigaAPI(
         host='https://taiga.webtechnika.pl'
     )
     api.auth(
-        username='Nikit',
-        password=os.getenv('PASSWORD')
+        username=username,
+        password=password
     )
 
     request_employee = Employee.objects.get(user_id=user_id)
