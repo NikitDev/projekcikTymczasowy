@@ -87,7 +87,7 @@
                 <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
                 <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'employee_report' %}">{% trans "Płachta pracowników" %}</a>
                 {% endif %}
-                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" >{% trans "Synchronizuj z Taigą" %}</a>
+                <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenterLogin" >{% trans "Synchronizuj z Taigą" %}</a>
                 <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'view_profile' %}">{% trans "Profil" %}</a>
                 <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
             {% endif %}
@@ -107,6 +107,36 @@
     {% block content %}
     {% endblock %}
     {% endblock %}
+    <div class="modal fade" id="exampleModalCenterLogin" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterLoginTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form id="task-form" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Zaloguj</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% for field in form %}
+                            {% if field.errors %}
+                            <div>
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                {{ field.label_tag }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark fw-bold" data-bs-dismiss="modal">Zamknij</button>
+                        <button type="submit" name="submit_task" class="btn fw-bold btn-dark">Zapisz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div id="messages">
         {% for message in messages %}
         <div {% if message.tags %} class="w-50 mx-auto fixed-top alert alert-{{ message.tags }} alert-dismissible fade show"{% endif %} style="top: 90px">
