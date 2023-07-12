@@ -1,0 +1,11 @@
+<div class="w-auto p-5 d-flex row justify-content-center rounded shadow-lg bg-white" style="--bs-bg-opacity: .3">
+    <div class="container h-auto w-auto p-5 d-inline-flex flex-column justify-content-center align-items-center rounded " style="--bs-bg-opacity: .3">
+        <p class="fst-italic fs-3">Jesteś obecnie wylogowany</p>
+        <br>
+        <p class="fs-5"> Aby się zalogować naciśnij przycisk poniżej</p>
+        <a type="button" class="btn w-100 mb-3 btn-dark " href="{% url 'account_login' %}">Zaloguj się</a>
+        <br>
+        <p class="fs-5">Aby stworzyć konto naciśnij przycisk poniżej</p>
+        <a type="button" class="btn w-100 btn-dark " href="{% url 'account_signup' %}">Zarejestruj się</a>
+    </div>
+</div>

@@ -9,28 +9,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="sidebar" style="left:240px; width: 300px; padding-top: 82px; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
-    <div class="container d-flex border-bottom border-black">
-        <h1>Projekty ({{ projects|length }})</h1>
-    </div>
-    <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
-            {% for project in projects %}
-            <a type="button" class="list-group-item list-group-item-action py-1 ripple" style="background-color: transparent;" href="{% url 'view_project' project.id %}">
-                <p class="fw-bold" style="background-color: transparent; font-size: 26px;">
-                    {{ project.project_name }}
-                </p>
-                <p class="text-nowrap overflow-hidden text-truncate">
-                    Opis Projektu: {{ project.description }}
-                </p>
-            </a>
-            {% endfor %}
-    </div>
-</div>
+{% include '_partials/projects_bar.html' %}
 
 <div style="margin-left: 300px;">
     <div class="container w-auto d-flex flex-column" >
         <div class="container d-flex row mb-5 border border-black">
-            <div class="col-lg-6 col-md-12 mx-auto p-2">
+            <div class="col-lg-6 col-md-12 mx-auto p-2" style="text-align: left;">
                 <div>
                     <output class="form-control" style="background-color: transparent; border:none" name="project-name" id="project-name"><b>ID projektu:</b> {{ project.id }}</output>
                 </div>
@@ -120,7 +104,7 @@
             <section>
                 <div id="task-grid" class="row d-flex justify-content-center gap-3">
                     {% for task in tasks %}
-                    <a type="button" class="shadow text-decoration-none" href="{% url 'view_task' project.id task.id %}" style="background-color: #707070; color: white">
+                    <a type="button" class="shadow text-decoration-none" href="{% url 'view_task' project.id task.id %}" style="background-color: #707070; color: white; text-align: left;">
                         <p class="text-wrap overflow-hidden text-truncate fs-4 fw-bold">
                             #{{ forloop.counter }} | {{ task.task_name }}
                         </p>
