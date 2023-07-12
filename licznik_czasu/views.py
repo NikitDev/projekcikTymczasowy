@@ -1,21 +1,24 @@
-import os
+import json
 
+import django.core.exceptions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from taiga import TaigaAPI
 from weasyprint import HTML
 
-from .models import Project, Task, TaskTimer, Client, Employee, User
+from .models import Project, Task, TaskTimer, Client, Employee
 from .forms import UserForm, TaskForm, TaskEmployeeForm, CustomTaigaLoginForm
 from django import forms
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
-from .tasks import get_taiga, add_periodic_tasks
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
+from .tasks import get_taiga
 
 
 def can_access_project(request, project_id):
@@ -39,8 +42,42 @@ def home(request):
     if request.method == 'POST':
         form = CustomTaigaLoginForm(request.POST)
         if form.is_valid():
-            login = form.cleaned_data['login']
-            haslo = form.cleaned_data['haslo']
+            username = form.cleaned_data['login']
+            password = form.cleaned_data['haslo']
+            # if not request.user.is_anonymous:
+            #     get_taiga.delay(request.user.id, request.user.first_name, request.user.last_name, username, password)
+            if not request.user.is_anonymous:
+                try:
+                    schedule, created = IntervalSchedule.objects.get_or_create(
+                        every=30,
+                        period=IntervalSchedule.SECONDS
+                    )
+                except django.core.exceptions.ValidationError:
+                    pass
+                try:
+                    api = TaigaAPI(
+                        host='https://taiga.webtechnika.pl'
+                    )
+                    api.auth(
+                        username=username,
+                        password=password
+                    )
+                    user_auth_token = api.me.auth_token
+                    PeriodicTask.objects.create(
+                        interval=schedule,
+                        task='licznik_czasu.tasks.get_taiga',
+                        name=request.user.id,
+                        args=json.dumps([
+                            request.user.id,
+                            request.user.first_name,
+                            request.user.last_name,
+                            username,
+                            password
+                        ])
+                    )
+                except:
+                    print("ERROR SCHEDULE")
+
     else:
         form = CustomTaigaLoginForm()
 
@@ -80,7 +117,7 @@ def view_profile(request):
     }
     return render(request, 'account/profile.html', context)
 
-  
+
 @login_required
 def view_project(request, project_id):
     check_permissions = can_access_project(request, project_id)
@@ -246,8 +283,8 @@ def project_report(request, project_id):
         employee_id = Employee.objects.get(user_id=request.user.id)
         projects = Project.objects.filter(employee=employee_id).order_by('id')
 
-    task_filter = request.POST.get('task_filter', None) # nazwa wybranego filtra zadania
-    employee_filter = request.POST.get('employee_filter', None) # nazwa wybranego filtra pracownika
+    task_filter = request.POST.get('task_filter', None)  # nazwa wybranego filtra zadania
+    employee_filter = request.POST.get('employee_filter', None)  # nazwa wybranego filtra pracownika
 
     project = get_object_or_404(Project, pk=project_id)
     tasks = Task.objects.filter(project=project_id)
@@ -257,7 +294,7 @@ def project_report(request, project_id):
     last_month = datetime.now() - timedelta(weeks=4)
     any_date = datetime.min
 
-    flag = True # flaga do wyboru trybu wyświetlania tabeli
+    flag = True  # flaga do wyboru trybu wyświetlania tabeli
 
     time_filters = {
         'Any date': any_date,
@@ -279,29 +316,29 @@ def project_report(request, project_id):
         selected_time_filter = request.POST.get('time_filter', None)
         generate_report = request.POST.get('generate_report', None)
 
-        if selected_time_filter is not None: # filtrowanie po czasie
+        if selected_time_filter is not None:  # filtrowanie po czasie
             selected_time_filter_date = time_filters[selected_time_filter]
         else:
             selected_time_filter_date = datetime.min
 
-        tasktimers = [] # lista wszystkich timerów bez względu na taska; dla wyświetlania filtrowania i raportów pdf
-        total = timedelta(0) # łączny czas timerów po zastosowaniu filtrowania
+        tasktimers = []  # lista wszystkich timerów bez względu na taska; dla wyświetlania filtrowania i raportów pdf
+        total = timedelta(0)  # łączny czas timerów po zastosowaniu filtrowania
 
-        tasktotal = [] # lista tasków; w celu wyświetlenia podsumowania w rozwijanej tabeli, bez filtrowania
+        tasktotal = []  # lista tasków; w celu wyświetlenia podsumowania w rozwijanej tabeli, bez filtrowania
 
         for task in tasks:
-            task_time = list(TaskTimer.objects.filter(task=task)) # lista timerów dla konkretnego taska
+            task_time = list(TaskTimer.objects.filter(task=task))  # lista timerów dla konkretnego taska
 
-            tasktimers2 = [] # lista wszystkich timerów dla konkretnego taska
-            total2 = timedelta(0) # łączny czas na każdego taska
-            start_dates = [] # daty rozpoczęcia timerów dla konkretnego taska; żeby wybrać pierwszą
-            end_dates = [] # daty zakończenia timerów dla konkretnego taska; żeby wybrąć ostatnią
+            tasktimers2 = []  # lista wszystkich timerów dla konkretnego taska
+            total2 = timedelta(0)  # łączny czas na każdego taska
+            start_dates = []  # daty rozpoczęcia timerów dla konkretnego taska; żeby wybrać pierwszą
+            end_dates = []  # daty zakończenia timerów dla konkretnego taska; żeby wybrąć ostatnią
 
             for time in task_time:
-                if time.time_started.date() >= selected_time_filter_date.date(): # filtrowanie po czasie
+                if time.time_started.date() >= selected_time_filter_date.date():  # filtrowanie po czasie
                     if time.time_elapsed:
                         total2 += time.time_elapsed
-                    taskinfo = { # informacje o konkretnym timerze
+                    taskinfo = {  # informacje o konkretnym timerze
                         'ids': task.id,
                         'name': time.task.task_name,
                         'time_started': time.time_started,
@@ -346,7 +383,7 @@ def project_report(request, project_id):
             else:
                 end_date = "-"
 
-            task3 = { # informacje o konkretnym tasku; w celu wyświetlenia podsumowania
+            task3 = {  # informacje o konkretnym tasku; w celu wyświetlenia podsumowania
                 'task': task,
                 'total_elapsed': str(total2).split(".")[0],
                 'start': start_date,
@@ -394,7 +431,7 @@ def employee_report(request):
         messages.warning(request, 'Nie masz dostepu do tej strony.')
         return redirect('home')
     if request.method == "POST":
-        generate_report = request.POST.get('generate_report', None) #pobieranie wartości generate report
+        generate_report = request.POST.get('generate_report', None)  # pobieranie wartości generate report
         employee_table = {}
         year = int(request.POST.getlist("year-selector")[0])
         month = int(request.POST.getlist("month-selector")[0])
@@ -434,30 +471,19 @@ def employee_report(request):
             'days': range(days),
             'flag': flag
         }
-        if generate_report is not None: #przy pobraniu wartości generate_report
-            template_path = 'licznik_czasu/employee_report_pdf.html' #link do tamplate pdf
+        if generate_report is not None:  # przy pobraniu wartości generate_report
+            template_path = 'licznik_czasu/employee_report_pdf.html'  # link do tamplate pdf
             template = get_template(template_path)
             html = template.render(context)
 
             pdf = HTML(string=html).write_pdf()
 
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="employee_report.pdf"' #nazwa wygenerowanego pliku / nie jest zapisywany
+            response['Content-Disposition'] = 'filename="employee_report.pdf"'  # nazwa wygenerowanego pliku / nie jest zapisywany
             response.write(pdf)
 
-            return response #po wygenerowaniu raportu od razu go otwiera
+            return response  # po wygenerowaniu raportu od razu go otwiera
 
     else:
         context = {}
     return render(request, 'licznik_czasu/employee_report.html', context)
-
-
-def taiga_login(request, username, password):
-    if not request.user.is_anonymous:
-        add_periodic_tasks(
-            user_id=request.user.id,
-            user_first_name=request.user.first_name,
-            user_last_name=request.user.last_name,
-            username=username,
-            password=password
-        )

@@ -1,6 +1,12 @@
 {% extends "account/base.html" %}
 
 {% block head_title %}Home{% endblock %}
+{% load static %}
+
+{% block extra_head %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'websocket.js'%}"></script>
+{% endblock %}
 
 {% block content %}
 {% csrf_token %}
@@ -17,7 +23,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-dark fw-bold" data-bs-dismiss="modal">Zamknij</button>
-                    <button type="submit" name="submit_task" class="btn fw-bold btn-dark">Zapisz</button>
+                    <button type="submit" name="submit_task" class="btn fw-bold btn-dark" id="test">Zapisz</button>
                 </div>
             </form>
         </div>
