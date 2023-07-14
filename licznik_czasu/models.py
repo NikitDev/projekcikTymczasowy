@@ -5,6 +5,8 @@ from django.db import models
 
 class User(AbstractUser):
     who_is = models.CharField(max_length=16, choices=(('CL', 'Client'), ('EM', 'Employee')), default='CL')
+    auth_token = models.CharField(max_length=210, null=True)
+    refresh_token = models.CharField(max_length=210, null=True)
 
 
 class Client(models.Model):
@@ -29,7 +31,7 @@ class Project(models.Model):
     description = models.TextField(null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     employee = models.ManyToManyField(Employee, blank=True)
-    taiga_id = models.IntegerField(null=True)
+    taiga_project_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.project_name

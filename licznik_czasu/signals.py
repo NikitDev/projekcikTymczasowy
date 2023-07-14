@@ -1,4 +1,3 @@
-from django.contrib.auth import user_logged_in
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
 from .models import Client, User, Employee
@@ -16,7 +15,7 @@ def create_profile(sender, instance, created, **kwargs):
             else:
                 print('Error!')
 
-    except Exception as err:
+    except Exception:
         pass
 
 
@@ -31,7 +30,7 @@ def update_user(sender, instance, **kwargs):
                     client.delete()
                     Employee.objects.create(user=instance).save()
 
-            except Exception as err:
+            except Exception:
                 pass
 
             try:

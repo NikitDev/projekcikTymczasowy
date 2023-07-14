@@ -2,7 +2,7 @@ from django import forms
 from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm
 from django.contrib.auth.forms import UserChangeForm
 
-from .models import User, Project, Task, Employee
+from .models import User, Task
 
 
 class CustomLoginForm(LoginForm):
@@ -82,10 +82,5 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class CustomTaigaLoginForm(forms.Form):
-    # username = forms.TextInput()
-    # username.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'login'})
-    # password = forms.TextInput()
-    # password.widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'password'})
-    login = forms.CharField(label="Login")
-    haslo = forms.CharField(label="Haslo", widget=forms.PasswordInput)
-
+    login = forms.CharField(label="Login", required=False)
+    haslo = forms.CharField(label="Haslo", required=False, widget=forms.PasswordInput)

@@ -2,6 +2,8 @@
 
 {% block head_title %}Home{% endblock %}
 
+{% load static %}
+
 {% block content %}
 {% csrf_token %}
 {% if user.is_authenticated %}

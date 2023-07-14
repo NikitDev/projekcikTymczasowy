@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'licznik_czasu.apps.licznik_czasuConfig',
     'celery',
+    'django_celery_beat',
 ]
 
 AUTH_USER_MODEL = "licznik_czasu.User"
@@ -98,7 +99,6 @@ ACCOUNT_FORMS = {
 }
 
 WSGI_APPLICATION = 'ProjektZespolowy.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -161,9 +161,16 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# CELERY
 
+# CELERY
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 CELERY_TIMEZONE = 'UTC'
+
+CELERY_IMPORTS = ('licznik_czasu.tasks',)
+
+# Celery beats settings
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
