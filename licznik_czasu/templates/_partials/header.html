@@ -1,0 +1,41 @@
+{% load static %}
+{% load i18n %}
+{% load account %}
+
+
+<header>
+  <nav id="sidebar" class="sidebar bg-dark shadow d-flex flex-column">
+    <div class="position-sticky">
+      <div class="list-group list-group-flush mx-3 mt-4">
+          {% if user.is_authenticated %}
+          <a class="list-group-item list-group-item-action ripple text-center" style="color:white; background-color: transparent;">
+
+              Witaj, <b>{% user_display user %}</b>
+              <br>Konto
+              {% if user.is_superuser %}
+                  <b>Superuser</b>
+                  {% else %}
+                  <b>{{ user.get_who_is_display }}</b>
+                  </a>
+              {% endif %}
+          
+              <a href="{% url 'projects' %}" class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" aria-current="true">Projekty</a>
+              {% if user.is_superuser %}
+              <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'admin:index' %}">{% trans "Panel administratora" %}</a>
+              <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'employee_report' %}">{% trans "Płachta pracowników" %}</a>
+              {% endif %}
+              <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenterLogin" >{% trans "Synchronizuj z Taigą" %}</a>
+              <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'view_profile' %}">{% trans "Profil" %}</a>
+              <a class="list-group-item list-group-item-action py-4 ripple" style="color:white; background-color: transparent;" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+          {% endif %}
+      </div>
+    </div>
+  </nav>
+  <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
+      <div class="container-fluid justify-content-center">
+        <a class="navbar-brand text-center justify-content-center fw-bold" style="color: white" href="{% url 'home' %}">
+          Time Tracker
+        </a>
+      </div>
+  </nav>
+</header>

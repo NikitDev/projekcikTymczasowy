@@ -1,0 +1,17 @@
+<div class="sidebar" style="left:240px; width: 300px; padding-top: 82px; background-color: rgb(133, 133, 133);" style="--bs-bg-opacity: .3;">
+    <div class="container d-flex border-bottom border-black">
+        <h1>Projekty ({{ projects|length }})</h1>
+    </div>
+    <div class="list-group list-group-flush overflow-auto mx-3 mt-4">
+            {% for project in projects %}
+            <a type="button" class="list-group-item list-group-item-action py-1 ripple" style="background-color: transparent; text-align: left;" href="{% url 'view_project' project.id %}">
+                <p class="fw-bold" style="background-color: transparent; font-size: 26px;">
+                    {{ project.project_name }}
+                </p>
+                <p class="text-nowrap overflow-hidden text-truncate">
+                    Opis Projektu: {{ project.description }}
+                </p>
+            </a>
+            {% endfor %}
+    </div>
+</div>
