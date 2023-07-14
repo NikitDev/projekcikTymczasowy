@@ -30,25 +30,6 @@
 </div>
 <div style="margin-left: 300px; text-align: left;">
     <div class="container w-100 d-flex flex-column border border-black" >
-<!--        Modal delete task-->
-        <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">\
-                <form action="{% url 'delete_task' task.id %}" method="POST" class="modal-content">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteTaskModalLabel">Usuń zadanie</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Czy napewno chcesz usunąć to zadanie? 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                        <button type="submit" name="submit_task_delete" class="btn btn-danger">Usuń</button>
-                    </div>
-                </form>
-            </div>
-        </div>
         <div class="container d-flex row mb-5">
             <div class="col-lg-6 col-md-12 mx-auto p-2">
                 <div>
@@ -86,32 +67,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if user.is_superuser or user.who_is == "EM" %}
-                <button type="button" class="btn btn-dark mb-3 w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">
-                    Dodaj pracowników
-                </button>
-                {% endif %}
-            </div>
-<!--            Modal add employee-->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <form id="employee-form" method="POST" class="modal-content">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Dodaj pracowników</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            {% for field in form2 %}
-                            {{ field }}
-                            {% endfor %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                            <button type="submit" name="submit_employee" class="btn btn-primary">Zapisz</button>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
