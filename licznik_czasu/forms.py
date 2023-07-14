@@ -82,5 +82,5 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class CustomTaigaLoginForm(forms.Form):
-    login = forms.CharField(label="Login")
-    haslo = forms.CharField(label="Haslo", widget=forms.PasswordInput)
+    login = forms.CharField(label="Login", required=False)
+    haslo = forms.CharField(label="Haslo", required=False, widget=forms.PasswordInput)

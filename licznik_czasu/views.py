@@ -1,13 +1,9 @@
-import json
-
-import django.core.exceptions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from taiga import TaigaAPI
 from weasyprint import HTML
 
 from .models import Project, Task, TaskTimer, Client, Employee
@@ -17,8 +13,7 @@ from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from calendar import monthrange
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
-from .tasks import get_taiga
+from .tasks import authenticate_taiga_user
 
 
 def can_access_project(request, project_id):
@@ -44,40 +39,8 @@ def home(request):
         if form.is_valid():
             username = form.cleaned_data['login']
             password = form.cleaned_data['haslo']
-            # if not request.user.is_anonymous:
-            #     get_taiga.delay(request.user.id, request.user.first_name, request.user.last_name, username, password)
-            if not request.user.is_anonymous:
-                try:
-                    schedule, created = IntervalSchedule.objects.get_or_create(
-                        every=30,
-                        period=IntervalSchedule.SECONDS
-                    )
-                except django.core.exceptions.ValidationError:
-                    pass
-                try:
-                    api = TaigaAPI(
-                        host='https://taiga.webtechnika.pl'
-                    )
-                    api.auth(
-                        username=username,
-                        password=password
-                    )
-                    user_auth_token = api.me.auth_token
-                    PeriodicTask.objects.create(
-                        interval=schedule,
-                        task='licznik_czasu.tasks.get_taiga',
-                        name=request.user.id,
-                        args=json.dumps([
-                            request.user.id,
-                            request.user.first_name,
-                            request.user.last_name,
-                            username,
-                            password
-                        ])
-                    )
-                except:
-                    print("ERROR SCHEDULE")
-
+            if not request.user.is_anonymous and username and password:
+                authenticate_taiga_user.delay(request.user.id, username, password)
     else:
         form = CustomTaigaLoginForm()
 

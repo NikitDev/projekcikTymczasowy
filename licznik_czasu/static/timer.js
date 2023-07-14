@@ -57,7 +57,7 @@ $(document).ready(function() {
                     if (response.success) {
                         start_time = new Date().getTime();
                         timerInterval = setInterval(timer1, 1000);
-                        setInterval(CallAutosave, 5000);
+                        autoSave = setInterval(CallAutosave, 5000);
                     }
                 });
                 flag = false;
@@ -70,6 +70,7 @@ $(document).ready(function() {
             } else {
                 // stop
                 clearInterval(timerInterval);
+                clearInterval(autoSave);
                 $('#timer-display').text('00:00:00');
                 $("#timer_button").text("START");
                 $.post('', {

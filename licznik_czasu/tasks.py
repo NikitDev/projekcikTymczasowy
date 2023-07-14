@@ -1,122 +1,104 @@
-import os
-import time
+import json
+
+import requests
 
 from celery import shared_task
+from django_celery_beat.models import PeriodicTask
 from taiga import TaigaAPI
 
 from .models import Project, Employee, Task, User
 
 
+def create_periodic_task(user_id):
+    print('aha')
+    pr, _ = PeriodicTask.objects.update_or_create(
+        interval=30.0,
+        task='licznik_czasu.tasks.get_taiga',
+        name=f'Periodic Task for User ID: {user_id}',
+        args=json.dumps({user_id}),
+    )
+    print(f'koniec:')
+
+
 @shared_task
-def get_taiga(user_id, user_first_name, user_last_name, username, password):
-    print("Task started...")
-    api = TaigaAPI(
-        host='https://taiga.webtechnika.pl'
-    )
-    api.auth(
-        username=username,
-        password=password
-    )
+def authenticate_taiga_user(user_id, username, password):
+    try:
+        api = TaigaAPI(
+            host='https://taiga.webtechnika.pl'
+        )
+        api.auth(
+            username=username,
+            password=password
+        )
+        auth_token = api.token
+        refresh_token = api.token_refresh
 
-    request_employee = Employee.objects.get(user_id=user_id)
-    user_projects_query = request_employee.project_set.all().values_list('taiga_id', flat=True)
-    user_projects_list = list(user_projects_query)
-    taiga_projects_list = api.projects.list()
-    taiga_users = api.users.list()
+        user = User.objects.get(id=user_id)
+        user.auth_token = auth_token
+        user.refresh_token = refresh_token
+        user.save()
+        print('Success')
+        create_periodic_task(user_id)
+    except:
+        print('Wrong passwords...')
 
-    user_full_name = user_first_name + ' ' + user_last_name
 
-    for i in taiga_projects_list:
-        if i.id not in user_projects_list:
-            for taiga_user in i.list_memberships():
-                if str(taiga_user.full_name) == str(user_full_name):
-                    if not Project.objects.filter(taiga_id=i.id).exists():
-                        Project.objects.create(project_name=i.slug, description=i.description, taiga_id=i.id)
-
-                    employee = Employee.objects.get(user_id=user_id)
-                    project = Project.objects.get(taiga_id=i.id)
-                    user_projects_list.append(i.id)
-
-                    project.employee.add(employee)
-                    break
-        else:
-            for task in i.list_user_stories():
-                taiga_members = []
-                for member in task.assigned_users:
-                    for taiga_m in taiga_users:
-                        if member == taiga_m.id:
-                            taiga_members.append(taiga_m.full_name)
-                try:
-                    project_for_tasks = Project.objects.get(taiga_id=i.id)
-                except Project.DoesNotExist:
-                    continue
-                if task.id not in project_for_tasks.task_set.all().values_list('taiga_task_id', flat=True):
-                    task_tracker = Task.objects.get_or_create(
-                        task_name=task,
-                        description=i.get_userstory_by_ref(task.ref).description,
-                        project=project_for_tasks,
-                        taiga_task_id=task.id
-                    )
-                    task_tracker = Task.objects.get(taiga_task_id=task.id)
-                    taiga_members = list(map(str, taiga_members))
-                    if str(user_full_name) in taiga_members:
-                        usr = User.objects.get(first_name=user_first_name, last_name=user_last_name)
-                        employee = Employee.objects.get(user=usr.id)
-                        task_tracker.employee.add(employee.id)
-
-    return "Success"
-
-# @shared_task
-# def get_taiga_admin():
-#     api = TaigaAPI(
-#         host='https://taiga.webtechnika.pl'
-#     )
-#     api.auth(
-#         username='Nikit',
-#         password=os.getenv('PASSWORD')
-#     )
-#
-#     all_projects_query = Project.objects.all().values_list('taiga_id', flat=True)
-#     all_projects_list = list(all_projects_query)
-#     taiga_projects_list = api.projects.list()
-#     taiga_users = api.users.list()
-#
-#     # user_full_name = request.user.first_name + ' ' + request.user.last_name
-#
-#     for i in taiga_projects_list:
-#         if i.id not in all_projects_list:
-#             for taiga_user in i.list_memberships():
-#                 if not Project.objects.filter(taiga_id=i.id).exists():
-#                     Project.objects.create(project_name=i.slug, description=i.description, taiga_id=i.id)
-#
-#                 first_name, last_name = taiga_user.full_name.split()
-#                 employee = Employee.objects.get(first_name=first_name, last_name=last_name)
-#                 project = Project.objects.get(taiga_id=i.id)
-#                 all_projects_list.append(i.id)
-#                 project.employee.add(employee)
-#
-#         else:
-#             for task in i.list_user_stories():
-#                 taiga_members = []
-#                 for member in task.assigned_users:
-#                     for taiga_m in taiga_users:
-#                         if member == taiga_m.id:
-#                             taiga_members.append(taiga_m.full_name)
-#                 try:
-#                     project_for_tasks = Project.objects.get(taiga_id=i.id)
-#                 except Project.DoesNotExist:
-#                     continue
-#                 if task.id not in project_for_tasks.task_set.all().values_list('taiga_task_id', flat=True):
-#                     task_tracker = Task.objects.create(
-#                         task_name=task,
-#                         description=i.get_userstory_by_ref(task.ref).description,
-#                         project=project_for_tasks,
-#                         taiga_task_id=task.id
-#                     )
-#
-#                     taiga_members = list(map(str, taiga_members))
-#                     for member in taiga_members:
-#                         first_name, last_name = member.full_name.split()
-#                         usr = User.objects.get(first_name=first_name, last_name=last_name)
-#                         employee = Employee.objects.get(user=usr.id)
-#                         task_tracker.employee.add(employee.id)
+@shared_task
+def get_taiga(user_id):
+    print(f'XD: {user_id}')
+    # try:
+    #     api = TaigaAPI(
+    #         host='https://taiga.webtechnika.pl',
+    #         token=User.objects.get(id=user_id).auth_token
+    #     )
+    #     assert api.me()
+    # except:
+    #     user = User.objects.get(id=user_id)
+    #     response = requests.post(
+    #             'https://taiga.webtechnika.pl/api/v1/auth/refresh',
+    #             json={
+    #                 'grant_type': 'refresh_token',
+    #                 'refresh': user.refresh_token
+    #             }
+    #         ).json()
+    #
+    #     user.auth_token = response['auth_token']
+    #     user.refresh_token = response['refresh_token']
+    #     user.save()
+    #
+    #     return 'Error...'
+    #
+    # print("Task started...")
+    #
+    # taiga_projects = [project for project in api.projects.list()]
+    # user_taiga_id = api.me().id
+    # user_to_add = User.objects.get(id=user_id)
+    # employee_to_add = Employee.objects.get(user_id=user_to_add.id)
+    #
+    # for taiga_project in taiga_projects:
+    #     project, _ = Project.objects.update_or_create(
+    #         project_name=taiga_project.name,
+    #         taiga_project_id=taiga_project.id,
+    #         defaults={
+    #             'description': taiga_project.description
+    #         }
+    #     )
+    #     if not project.employee.filter(id=user_to_add.id).exists():
+    #         project.employee.add(employee_to_add.id)
+    #
+    #     taiga_project_tasks = [task for task in taiga_project.list_user_stories()]
+    #     for taiga_task in taiga_project_tasks:
+    #         description = taiga_project.get_userstory_by_ref(taiga_task.ref).description
+    #         task, _ = Task.objects.update_or_create(
+    #             task_name=taiga_task.subject,
+    #             taiga_task_id=taiga_task.id,
+    #             defaults={
+    #                 'description': description,
+    #                 'project': project
+    #             }
+    #         )
+    #         if user_taiga_id in taiga_task.assigned_users:
+    #             if not task.employee.filter(id=user_to_add.id).exists():
+    #                 task.employee.add(employee_to_add.id)
+    #
+    # print("Task ended...")

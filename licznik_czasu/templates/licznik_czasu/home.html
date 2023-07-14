@@ -1,12 +1,8 @@
 {% extends "account/base.html" %}
 
 {% block head_title %}Home{% endblock %}
-{% load static %}
 
-{% block extra_head %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{% static 'websocket.js'%}"></script>
-{% endblock %}
+{% load static %}
 
 {% block content %}
 {% csrf_token %}
