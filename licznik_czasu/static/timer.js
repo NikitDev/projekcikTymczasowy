@@ -3,7 +3,7 @@ $(document).ready(function() {
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
     var project_id, task_id, session_id;
     if(who_is != 'CL' || is_superuser != true) {
-        if (session_id != task_id) {
+        if(session_id != task_id || access_timer != 'True') {
             flag = true;
             $("#timer_button").text("START");
             $("#timer_button").attr("disabled", true);

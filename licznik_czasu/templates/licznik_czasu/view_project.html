@@ -57,7 +57,7 @@
                 <a class="btn btn-dark mb-3 justify-content-center d-flex w-100 fw-bold" href="{% url 'project_report' project.id %}">Raport</a>
             </div>
             <div class="col">
-                <a class="btn btn-dark mb-3 justify-content-center d-flex w-100 fw-bold" href="https://taiga.webtechnika.pl/project/{{ project }}/kanban">Taiga</a>
+                <a class="btn btn-dark mb-3 justify-content-center d-flex w-100 fw-bold" href="https://taiga.webtechnika.pl/project/{{ project.slug }}/kanban">Taiga</a>
             </div>
         </div>
         <div class="d-flex col justify-content-between border-bottom border-black">

@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from weasyprint import HTML
 
-from .models import Project, Task, TaskTimer, Client, Employee
+from .models import Project, Task, TaskTimer, Client, Employee, User
 from .forms import UserForm, TaskForm, TaskEmployeeForm, CustomTaigaLoginForm
 from django import forms
 from django.utils import timezone
@@ -45,9 +45,16 @@ def home(request):
         form = CustomTaigaLoginForm()
 
     context = {
-        'form': form
+        'form': form,
     }
     return render(request, 'licznik_czasu/home.html', context)
+
+
+def taiga_status(request):
+    user = User.objects.get(id=request.user.id)
+    status = user.taiga_active
+    response_data = [status]
+    return JsonResponse(response_data, safe=False)
 
 
 def projects(request):
@@ -169,6 +176,9 @@ def view_task(request, project_id, task_id):
     task = get_object_or_404(Task, pk=task_id)
     project = get_object_or_404(Project, pk=project_id)
 
+    active_task_timers = TaskTimer.objects.filter(user=request.user, is_active=True)
+    can_access_timer = False if active_task_timers else True
+
     TaskEmployeeForm.base_fields['employee'] = forms.ModelMultipleChoiceField(
         queryset=project.employee, widget=forms.CheckboxSelectMultiple(), required=False)
     if request.method == 'POST':
@@ -179,7 +189,11 @@ def view_task(request, project_id, task_id):
             start_time = timezone.now()
             request.session['start_time'] = start_time.timestamp()
             request.session['task_id'] = task_id
-            timer = TaskTimer.objects.create(task_id=task_id, user=request.user, is_active=True)
+            timer = TaskTimer.objects.create(
+                task_id=task_id,
+                user=request.user,
+                is_active=True
+            )
             request.session['pk'] = timer.pk
             return JsonResponse({'success': True})
         elif action == 'stop':
@@ -212,7 +226,8 @@ def view_task(request, project_id, task_id):
         "task_id": task_id,
         'current': request.session.get('start_time'),
         'who_is': str(request.user.who_is),
-        'is_superuser': bool(request.user.is_superuser)
+        'is_superuser': bool(request.user.is_superuser),
+        'access_timer': can_access_timer
     }
     return render(request, "licznik_czasu/view_task.html", context)
 

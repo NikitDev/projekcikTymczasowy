@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block extra_head %}
-<script type="text/javascript">var value = "{{ current }}"; var session_id = "{{ session_id }}"; var task_id = "{{ task_id }}"; var csrfToken = "{{ csrf_token }}"; var who_is = "{{ who_is }}"; var is_superuser = "{{ is_superuser }}"</script>
+<script type="text/javascript">var value = "{{ current }}"; var session_id = "{{ session_id }}"; var task_id = "{{ task_id }}"; var csrfToken = "{{ csrf_token }}"; var who_is = "{{ who_is }}"; var is_superuser = "{{ is_superuser }}"; var access_timer = "{{ access_timer }}"</script>
 <script src="{% static 'timer.js' %}"></script>
 <script src="{% static 'client.js' %}"></script>
 <script src="{% static 'view-task.js'%}"></script>

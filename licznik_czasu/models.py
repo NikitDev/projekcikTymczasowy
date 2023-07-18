@@ -7,6 +7,7 @@ class User(AbstractUser):
     who_is = models.CharField(max_length=16, choices=(('CL', 'Client'), ('EM', 'Employee')), default='CL')
     auth_token = models.CharField(max_length=210, null=True)
     refresh_token = models.CharField(max_length=210, null=True)
+    taiga_active = models.BooleanField(default=False)
 
 
 class Client(models.Model):
@@ -32,6 +33,7 @@ class Project(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     employee = models.ManyToManyField(Employee, blank=True)
     taiga_project_id = models.IntegerField(null=True)
+    slug = models.CharField(max_length=256, null=True)
 
     def __str__(self):
         return self.project_name

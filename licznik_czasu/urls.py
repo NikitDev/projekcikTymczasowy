@@ -14,5 +14,6 @@ urlpatterns = [
     path('project/<int:project_id>/task/<int:task_id>/save_view/', views.save_view, name="save_view"),
     path('project/<int:project_id>/task/<int:task_id>/save_view_second/', views.save_view_second, name="save_view_second"),
     path('project/<int:project_id>/task/<int:task_id>/active/', views.client_data, name='active_employees'),
+    path('status/', views.taiga_status, name='taiga_status'),
 
 ]

@@ -2,6 +2,12 @@
 {% load i18n %}
 {% load account %}
 
+{% block extra_head %}
+<script type="text/javascript">var csrfToken = "{{ csrf_token }}"; var who_is = "{{ user.who_is }}"; var is_superuser = "{{ user.is_superuser }}"</script>
+
+<script src="{% static 'taiga_status.js'%}"></script>
+{% endblock %}
+
 
 <header>
   <nav id="sidebar" class="sidebar bg-dark shadow d-flex flex-column">
@@ -32,6 +38,8 @@
     </div>
   </nav>
   <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
+      <div id="status_taiga" style="color: white">
+      </div>
       <div class="container-fluid justify-content-center">
         <a class="navbar-brand text-center justify-content-center fw-bold" style="color: white" href="{% url 'home' %}">
           Time Tracker
